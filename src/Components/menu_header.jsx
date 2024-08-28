@@ -1,6 +1,7 @@
 // src/components/Header.js
 import React from 'react';
-import '../Styles/menu_header.css';
+import { Link } from 'react-router-dom'; // Importa Link desde react-router-dom
+import '../Styles/menu_header.css'; // Asegúrate de que esta ruta sea correcta
 
 function Header() {
   return (
@@ -8,11 +9,11 @@ function Header() {
       <div className="logo">Onda Studio</div>
       <nav>
         <ul>
-          <li><a href="#">Team</a></li>
-          <li><a href="#">Proyectos</a></li>
-          <li><a href="#">Tienda</a></li>
-          <li><a href="#">Personalizados</a></li>
-          <li><a href="#">Martín</a></li>
+          <li><Link to="/">Team</Link></li> {/* Enlace a la página de Team */}
+          <li><Link to="/projects">Proyectos</Link></li> {/* Enlace a la página de Projects */}
+          <li><Link to="/store">Tienda</Link></li> {/* Enlace a la página de Store */}
+          <li><Link to="/customs">Personalizados</Link></li> {/* Enlace a la página de Customs */}
+          <li><Link to="/login">Martín</Link></li> {/* Enlace a la página de Login */}
         </ul>
       </nav>
     </header>
