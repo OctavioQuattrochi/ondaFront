@@ -1,0 +1,31 @@
+.footer {
+    background-color: black; /* Fondo negro */
+    color: white; /* Texto en blanco */
+    padding: 20px 40px; /* Espacio interno, igual que el header */
+    text-align: center; /* Centrar el contenido */
+    display: flex;
+    justify-content: space-between; /* Igual que en el header */
+    align-items: center; /* Centrar verticalmente */
+    position: fixed;
+    bottom: 0; /* Posicionar en la parte inferior */
+    width: calc(100% - 80px); /* Igual que el header, ajustando por padding */
+    z-index: 1000;
+  }
+  
+  .footer-content {
+    display: flex;
+    align-items: center; /* Centrar verticalmente */
+    justify-content: center; /* Centrar horizontalmente */
+    width: 100%;
+  }
+  
+  .instagram-logo {
+    width: 40px; /* Tamaño del logo */
+    height: 40px; /* Tamaño del logo */
+    margin-right: 10px; /* Espacio entre el logo y el texto */
+  }
+  
+  .footer-text {
+    font-size: 18px; /* Tamaño del texto */
+  }
+  

@@ -1,0 +1,56 @@
+/* src/Styles/team.css */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  
+  .team-page {
+    background-color: black; /* Fondo negro */
+    color: white; /* Texto en blanco */
+    padding: 180px 760px; /* Espacio interno igual que el footer */
+    text-align: center; /* Centrar el contenido */
+    display: flex;
+    flex-direction: column; /* Alinear verticalmente los elementos */
+    align-items: center; /* Centrar horizontalmente */
+    width: 100%; /* Ocupa todo el ancho de la pantalla */
+    min-height: calc(100vh - 120px); /* Ocupa todo el alto disponible entre header y footer */
+    box-sizing: border-box; /* Incluir el padding en el cálculo del ancho y alto */
+  }
+  
+  .team-title {
+    font-size: 36px; /* Tamaño del título */
+    margin-bottom: 40px; /* Espacio debajo del título */
+  }
+  
+  .team-container {
+    display: flex;
+    justify-content: center; /* Centrar los contenedores de los miembros */
+    gap: 20px; /* Espacio entre los contenedores */
+    flex-wrap: wrap; /* Ajustar el diseño si hay muchas imágenes */
+  }
+  
+  .team-member {
+    display: flex;
+    flex-direction: column; /* Colocar imagen y label en columna */
+    align-items: center; /* Centrar horizontalmente */
+  }
+  
+  .team-image {
+    width: 150px; /* Ancho de la imagen */
+    height: 150px; /* Alto de la imagen */
+    border-radius: 75px; /* Bordes redondeados */
+    object-fit: cover; /* Ajustar la imagen para que cubra el área del contenedor */
+    margin-bottom: 10px; /* Espacio entre la imagen y el label */
+  }
+  
+  .team-name {
+    font-size: 18px; /* Tamaño del texto del nombre */
+  }
+  
+  /* Opcional: agrega una transición para el hover sobre la imagen */
+  .team-image:hover {
+    opacity: 0.8;
+    transition: opacity 0.3s;
+  }
+  

@@ -1,0 +1,48 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Centrar verticalmente los elementos */
+    padding: 20px 40px; /* Agrega 40px de padding a los costados */
+    background-color: black;
+    color: white;
+    position: fixed; /* Fijar el header en la parte superior */
+    top: 0;
+    width: calc(100% - 80px); /* Resta el padding horizontal al ancho */
+    z-index: 1000; /* Asegurar que esté por encima de otros elementos */
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+
+.header .logo {
+    font-size: 24px;
+    font-weight: bold; /* Negrita para el logo */
+}
+
+.header nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.header nav ul li {
+    margin: 0 10px;
+}
+
+.header nav ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px; /* Espacio dentro de los enlaces */
+    border-radius: 4px; /* Bordes ligeramente redondeados */
+}
+
+.header nav ul li a:hover {
+    background-color: #444; /* Color de fondo al pasar el mouse */
+    color: #ccc; /* Color del texto al pasar el mouse */
+}
+
+/* Añadir padding superior al body para no cubrir contenido */
+body {
+    padding-top: 80px; /* Ajustar este valor según la altura del header */
+}
