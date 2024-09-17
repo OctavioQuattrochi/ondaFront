@@ -12,7 +12,7 @@ const Team = () => {
         </div>
         <div className="team-member">
           <img className="team-image" src="https://via.placeholder.com/150" alt="Santiago Freille" />
-          <div className="team-name">Santiago Freille</div>
+          <div className="team-name">Santiago F</div>
         </div>
         <div className="team-member">
           <img className="team-image" src="https://via.placeholder.com/150" alt="Sofia Freille" />
