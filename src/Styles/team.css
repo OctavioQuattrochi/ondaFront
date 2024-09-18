@@ -1,56 +1,101 @@
 /* src/Styles/team.css */
 html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: black; /* Fondo negro para toda la página */
+  overflow-x: hidden; /* Evitar el scroll horizontal */
+}
+
+main {
+  width: 90%;
+  min-width: 1200px;
+  margin: auto;
+  background-color: black; /* Fondo negro para el área principal */
+}
+
+.team-page {
+  color: white; /* Texto en blanco */
+  padding: 20px; /* Espacio interno */
+  text-align: center; /* Centrar el contenido */
+  display: flex;
+  flex-direction: column; /* Alinear verticalmente los elementos */
+  justify-content: center; /* Centrar verticalmente */
+  align-items: center; /* Centrar horizontalmente */
+  width: 100%; /* Asegurar que ocupa todo el ancho */
+  max-width: 1200px; /* Limitar el ancho máximo si lo deseas */
+  box-sizing: border-box; /* Incluir el padding en el cálculo del ancho y alto */
+}
+
+
+.team-title {
+  font-size: 36px; /* Tamaño del título */
+  margin-bottom: 40px; /* Espacio debajo del título */
+}
+
+.team-container {
+  display: flex;
+  justify-content: center; /* Centrar los contenedores de los miembros */
+  gap: 20px; /* Espacio entre los contenedores */
+  flex-wrap: wrap; /* Ajustar el diseño si hay muchas imágenes */
+}
+
+.team-member {
+  display: flex;
+  flex-direction: column; /* Colocar imagen y label en columna */
+  align-items: center; /* Centrar horizontalmente */
+}
+
+.team-image {
+  width: 150px; /* Ancho y alto iguales para hacerlas cuadradas */
+  height: 150px;
+  border-radius: 8px; /* Bordes redondeados de 8px */
+  object-fit: cover; /* Ajustar la imagen para que cubra el área del contenedor */
+  margin-bottom: 10px; /* Espacio entre la imagen y el label */
+}
+
+.team-name {
+  font-size: 18px; /* Tamaño del texto del nombre */
+}
+
+/* Efecto hover para las imágenes */
+.team-image:hover {
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+/* Scroll vertical si el contenido es más alto que la pantalla en móviles */
+@media (max-width: 768px) {
+  body {
+    overflow-y: auto; /* Scroll en vertical si es necesario */
   }
-  
-  .team-page {
-    background-color: black; /* Fondo negro */
-    color: white; /* Texto en blanco */
-    padding: 180px 760px; /* Espacio interno igual que el footer */
-    text-align: center; /* Centrar el contenido */
-    display: flex;
-    flex-direction: column; /* Alinear verticalmente los elementos */
-    align-items: center; /* Centrar horizontalmente */
-    width: 100%; /* Ocupa todo el ancho de la pantalla */
-    min-height: calc(100vh - 120px); /* Ocupa todo el alto disponible entre header y footer */
-    box-sizing: border-box; /* Incluir el padding en el cálculo del ancho y alto */
-  }
-  
-  .team-title {
-    font-size: 36px; /* Tamaño del título */
-    margin-bottom: 40px; /* Espacio debajo del título */
-  }
-  
+
   .team-container {
-    display: flex;
-    justify-content: center; /* Centrar los contenedores de los miembros */
-    gap: 20px; /* Espacio entre los contenedores */
-    flex-wrap: wrap; /* Ajustar el diseño si hay muchas imágenes */
+    flex-direction: column; /* Los miembros del equipo uno debajo del otro */
   }
-  
+
   .team-member {
-    display: flex;
-    flex-direction: column; /* Colocar imagen y label en columna */
-    align-items: center; /* Centrar horizontalmente */
+    margin-bottom: 20px; /* Espacio entre miembros del equipo */
   }
-  
+
   .team-image {
-    width: 150px; /* Ancho de la imagen */
-    height: 150px; /* Alto de la imagen */
-    border-radius: 75px; /* Bordes redondeados */
-    object-fit: cover; /* Ajustar la imagen para que cubra el área del contenedor */
-    margin-bottom: 10px; /* Espacio entre la imagen y el label */
+    width: 100px; /* Ajustar tamaño de imagen para pantallas más pequeñas */
+    height: 100px;
   }
-  
+
   .team-name {
-    font-size: 18px; /* Tamaño del texto del nombre */
+    font-size: 16px; /* Reducir el tamaño del texto en pantallas pequeñas */
   }
-  
-  /* Opcional: agrega una transición para el hover sobre la imagen */
-  .team-image:hover {
-    opacity: 0.8;
-    transition: opacity 0.3s;
+}
+
+/* Responsive design para pantallas medianas */
+@media (max-width: 1200px) {
+  .team-image {
+    width: 120px;
+    height: 120px;
   }
-  
+
+  .team-name {
+    font-size: 17px;
+  }
+}
