@@ -1,0 +1,64 @@
+/* src/Styles/team.css */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: black; /* Fondo negro para toda la página */
+    overflow-x: hidden; /* Evitar el scroll horizontal */
+  }
+  
+  main {
+    width: 90%;
+    min-width: 1200px;
+    margin: auto;
+    background-color: black; /* Fondo negro para el área principal */
+  }
+
+.proyectos-page {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  h1 {
+    color: white;
+    font-size: 36px;
+    margin-bottom: 50px;
+  }
+  
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 50px auto 0;
+    max-width: 1000px;
+  }
+  
+  .image-container {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 5%; /* Bordes redondeados */
+    margin: 10px;
+  }
+  
+  .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Responsive Design: para pantallas más pequeñas */
+  @media (max-width: 768px) {
+    .image-container {
+      width: 200px;
+      height: 200px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .image-container {
+      width: 150px;
+      height: 150px;
+    }
+  }
+  
