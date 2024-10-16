@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Container, Paper } from '@mui/material';
-import '../Styles/login.css'; 
+import '../Styles/login.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -32,8 +32,13 @@ export default function Login() {
 
   return (
     <Container component="main" maxWidth="xs" className="login-container">
+      {/* Nuevo título con estilos personalizados */}
+      <Typography variant="h4" className="login-header">
+        Ingresar en <br />
+        <span className="login-header-onda">Onda estudio</span>
+      </Typography>
+
       <Paper elevation={3} className="login-paper">
-        <Typography variant="h5" className="login-title">Sign In</Typography>
         <form onSubmit={handleSubmit} noValidate>
           <TextField
             variant="outlined"
@@ -41,7 +46,7 @@ export default function Login() {
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label="Correo electrónico"
             name="email"
             autoComplete="email"
             autoFocus
@@ -56,7 +61,7 @@ export default function Login() {
             required
             fullWidth
             name="password"
-            label="Password"
+            label="Clave"
             type="password"
             id="password"
             autoComplete="current-password"
@@ -69,10 +74,11 @@ export default function Login() {
             type="submit"
             fullWidth
             variant="contained"
-            color="primary"
+            className="login-button"
           >
-            Sign In
+            Ingresar
           </Button>
+
         </form>
       </Paper>
     </Container>

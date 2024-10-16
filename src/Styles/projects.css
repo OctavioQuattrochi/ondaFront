@@ -8,8 +8,6 @@ html, body {
   }
   
   main {
-    width: 90%;
-    min-width: 1200px;
     margin: auto;
     background-color: black; /* Fondo negro para el área principal */
   }

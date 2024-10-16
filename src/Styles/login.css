@@ -1,19 +1,99 @@
+/* Estilos generales */
+body {
+  background-color: black;
+  color: white;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .login-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #f5f5f5;
-  }
-  
-  .login-paper {
-    padding: 20px;
-    margin-top: 30px;
-  }
-  
-  .login-title {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.login-paper {
+  background-color: #000000 !important;
+  padding: 20px;
+  margin-top: 30px;
+  border-radius: 8px;
+}
+
+.login-title {
+  margin-bottom: 20px;
+  text-align: left;
+  color: white; /* Texto blanco para el título */
+}
+
+/* Estilos para los campos de entrada y etiquetas */
+.MuiInputBase-input, 
+.MuiInputLabel-root {
+  color: white !important; /* Texto y etiquetas en blanco */
+}
+
+.MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline,
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: white; /* Borde blanco para los inputs */
+}
+
+/* Estilo para los placeholders */
+input::placeholder {
+  color: white; /* Placeholder en blanco */
+  opacity: 1; /* Asegura que el blanco sea completamente visible */
+}
+
+/* Estilos para el botón */
+.MuiButton-containedPrimary {
+  background-color: white;
+  color: black;
+}
+
+.MuiButton-containedPrimary:hover {
+  background-color: #dddddd;
+}
+/* Cambiar el color de las etiquetas (labels) */
+.MuiInputLabel-root {
+  color: white !important; /* Etiquetas de los TextFields en blanco */
+}
+
+/* Cuando la etiqueta (label) está enfocada */
+.MuiInputLabel-root.Mui-focused {
+  color: white !important; /* Mantener la etiqueta en blanco cuando se enfoca */
+}
+
+/* Cambiar el color del borde de los inputs */
+.MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: white !important; /* Borde blanco para los campos */
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: white !important; /* Bordes en blanco cuando están enfocados */
+}
+
+/* Estilo para el nuevo título */
+.login-header {
+  text-align: center;
+  color: #4D47C3; /* Color para "Ingresar en" */
+  margin-bottom: 20px;
+}
+
+/* Estilo para la parte de "Onda estudio" en el título */
+.login-header-onda {
+  color: white; /* Color blanco para "Onda estudio" */
+}
+
+.login-button {
+  background-color: #4D47C3 !important;
+  color: white;
+  transition: box-shadow 0.3s ease !important; /* Transición suave */
+}
+
+.login-button:hover {
+  background-color: #4D47C3 !important;
+  box-shadow: 0 0 10px 5px rgba(77, 71, 195, 0.5) !important; /* Sombra difuminada */
+}

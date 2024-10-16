@@ -1,0 +1,86 @@
+.budget-page {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    height: 100vh; /* Altura completa de la ventana */
+    overflow-y: auto; /* Habilita scroll vertical */
+    overflow-x: hidden; /* Desactiva scroll horizontal */
+  }
+  
+  .header-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .budget-title {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .content-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .left-container {
+    flex: 1;
+    padding-right: 20px;
+  }
+  
+  .right-container {
+    flex: 1;
+  }
+  
+  .image-input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+  }
+  
+  .subtitle {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-size {
+    display: flex;
+    align-items: center;
+  }
+  
+  .numeric-input {
+    width: 60%;
+    padding: 8px;
+    margin-right: 10px;
+  }
+  
+  .unit {
+    font-size: 14px;
+  }
+  
+  .color-select {
+    width: 100%;
+    padding: 8px;
+  }
+  
+  .note-textarea {
+    width: 100%;
+    padding: 10px;
+    resize: none;
+  }
+  
+  .budget-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .budget-button:hover {
+    background-color: #45a049;
+  }
+  

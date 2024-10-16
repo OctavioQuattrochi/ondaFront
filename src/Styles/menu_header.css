@@ -17,6 +17,7 @@
 .header .logo {
     font-size: 24px;
     font-weight: bold; /* Negrita para el logo */
+    color: white;
 }
 
 .header nav ul {
@@ -45,4 +46,8 @@
 /* Añadir padding superior al body para no cubrir contenido */
 body {
     padding-top: 80px; /* Ajustar este valor según la altura del header */
+}
+
+img.logo-image{
+    width: 25%;
 }

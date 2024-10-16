@@ -1,0 +1,103 @@
+.content-bienvenidos {
+    position: absolute; /* Absolutamente posicionado dentro del video-container */
+    top: 50%; /* Centrado verticalmente */
+    left: 10%;
+    transform: translateY(-50%); /* Alinea el centro del contenido verticalmente */
+    color: white;
+    z-index: 1; /* Asegura que el texto esté por encima del video */
+}
+
+h1 {
+    font-size: 48px;
+    line-height: 1.2;
+    text-align: left;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+
+/* Contenedor de la franja de seguridad */
+.security-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    color: white;
+    padding: 20px 10%;
+    text-align: center;
+    font-size: 16px;
+}
+
+.security-strip .container {
+    flex: 1;
+}
+
+.security-strip .left, 
+.security-strip .middle, 
+.security-strip .right {
+    padding: 10px;
+}
+
+.security-strip .container p {
+    margin: 0;
+    line-height: 1.4;
+    font-weight: bold;
+}
+
+/* Para asegurar que el texto se vea bien en todas las pantallas */
+.security-strip .container p {
+    font-size: 18px;
+}
+
+/* Contenedor del GIF y texto */
+.info-container {
+    display: flex;
+    justify-content: space-between;
+    background-color: #1E1E1E;
+    padding: 40px 10%;
+    color: white;
+}
+
+.info-left {
+    flex: 1;
+}
+
+.info-gif {
+    max-width: 100%;
+    height: auto;
+}
+
+.info-right {
+    flex: 1;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.info-title {
+    font-size: 32px;
+    font-weight: bold;
+    line-height: 1.4;
+}
+
+.info-text {
+    font-size: 18px;
+    margin-top: 20px;
+    line-height: 1.6;
+}
+
+/* Asegúrate que el texto esté bien alineado a la derecha */
+.info-right p, .info-right h2 {
+    text-align: right;
+}

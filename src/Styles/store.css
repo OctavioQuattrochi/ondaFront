@@ -1,0 +1,103 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: black;
+    overflow-x: hidden;
+  }
+  
+  .catalog-page {
+    color: white;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  
+  .catalog-title {
+    font-size: 36px;
+    margin-bottom: 40px;
+  }
+  
+  .product-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .product-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .product-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-bottom: 10px;
+  }
+  
+  .product-name {
+    font-size: 18px;
+  }
+  
+  .product-price {
+    font-size: 16px;
+    margin-top: 5px;
+  }
+  
+  .product-image:hover {
+    opacity: 0.8;
+    transition: opacity 0.3s;
+  }
+  
+  /* Diseño responsive para móviles */
+  @media (max-width: 768px) {
+    body {
+      overflow-y: auto;
+    }
+  
+    .product-container {
+      flex-direction: column;
+    }
+  
+    .product-item {
+      margin-bottom: 20px;
+    }
+  
+    .product-image {
+      width: 100px;
+      height: 100px;
+    }
+  
+    .product-name {
+      font-size: 16px;
+    }
+  
+    .product-price {
+      font-size: 14px;  
+    }
+  }
+  
+  /* Diseño responsive para pantallas medianas */
+  @media (max-width: 1200px) {
+    .product-image {
+      width: 120px;
+      height: 120px;
+    }
+  
+    .product-name {
+      font-size: 17px;
+    }
+  
+    .product-price {
+      font-size: 15px;
+    }
+  }
+  
