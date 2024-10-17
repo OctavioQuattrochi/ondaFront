@@ -1,19 +1,23 @@
-.content-bienvenidos {
-    position: absolute; /* Absolutamente posicionado dentro del video-container */
-    top: 50%; /* Centrado verticalmente */
-    left: 10%;
-    transform: translateY(-50%); /* Alinea el centro del contenido verticalmente */
-    color: white;
-    z-index: 1; /* Asegura que el texto esté por encima del video */
+.contenedor{
+    width: 100%;
+    height: 100%;
 }
 
-h1 {
-    font-size: 48px;
-    line-height: 1.2;
-    text-align: left;
+.video-background{
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.btn {
+.content-bienvenidos{
+    position: absolute;
+    top: 50%;
+    width: 100%;
+}
+
+.btn-diseño {
     display: inline-block;
     padding: 10px 20px;
     margin-top: 20px;
@@ -21,8 +25,9 @@ h1 {
     color: white;
     text-decoration: none;
     font-size: 18px;
-    border-radius: 5px;
+    border-radius: 8px;
     transition: background-color 0.3s ease;
+    margin-left: 10%;
 }
 
 
@@ -53,13 +58,33 @@ h1 {
     line-height: 1.4;
     font-weight: bold;
 }
+.security-strip .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .security-strip i {
+    font-size: 24px; /* Tamaño de los íconos */
+    margin-bottom: 10px; /* Espacio entre el ícono y el texto */
+    color: white; /* Color de los íconos, puedes cambiarlo si es necesario */
+  }
+  
+  .security-strip p {
+    margin: 0;
+    line-height: 1.4;
+    font-weight: bold;
+    text-align: center;
+    font-size: 18px;
+  }
+  
 
 /* Para asegurar que el texto se vea bien en todas las pantallas */
 .security-strip .container p {
     font-size: 18px;
 }
 
-/* Contenedor del GIF y texto */
 .info-container {
     display: flex;
     justify-content: space-between;
@@ -73,7 +98,7 @@ h1 {
 }
 
 .info-gif {
-    max-width: 100%;
+    max-width: 50%;
     height: auto;
 }
 
@@ -98,6 +123,34 @@ h1 {
 }
 
 /* Asegúrate que el texto esté bien alineado a la derecha */
-.info-right p, .info-right h2 {
+.info-right p, .info-right h1 {
     text-align: right;
 }
+
+.contenedor-fondo {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* Puedes ajustar la altura si lo necesitas */
+    background: url('../sources/home/fondo.png') no-repeat center center/cover;
+    background-size: cover;
+    padding: 20px; /* Espacio alrededor del contenido */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start; /* Alineado a la izquierda */
+    color: white; /* Puedes cambiar el color del texto */
+  }
+  
+  h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    margin-left: 10%;
+  }
+  
+  p {
+    margin-top: 5%;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    margin-left: 10%;
+  }
+  

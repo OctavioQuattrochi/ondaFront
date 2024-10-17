@@ -1,13 +1,3 @@
-/* src/Styles/team.css */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background-color: black; /* Fondo negro para toda la página */
-  overflow-x: hidden; /* Evitar el scroll horizontal */
-}
-
-
 .team-page {
   color: white; /* Texto en blanco */
   padding: 20px; /* Espacio interno */

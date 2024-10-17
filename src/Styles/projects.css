@@ -1,12 +1,3 @@
-/* src/Styles/team.css */
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background-color: black; /* Fondo negro para toda la página */
-    overflow-x: hidden; /* Evitar el scroll horizontal */
-  }
-  
   main {
     margin: auto;
     background-color: black; /* Fondo negro para el área principal */

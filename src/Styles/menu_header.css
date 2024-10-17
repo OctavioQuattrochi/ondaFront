@@ -43,10 +43,6 @@
     color: #ccc; /* Color del texto al pasar el mouse */
 }
 
-/* Añadir padding superior al body para no cubrir contenido */
-body {
-    padding-top: 80px; /* Ajustar este valor según la altura del header */
-}
 
 img.logo-image{
     width: 25%;
