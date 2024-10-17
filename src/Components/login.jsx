@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Container, Paper } from '@mui/material';
 import '../Styles/login.css';
+import { Link } from 'react-router-dom';
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -79,8 +81,15 @@ export default function Login() {
             Ingresar
           </Button>
 
+          <Typography variant="body2" align="center" className="create-account-link">
+            <Link to="/register" className="link">
+              Crear cuenta
+            </Link>
+          </Typography>
+
         </form>
       </Paper>
     </Container>
+
   );
 }

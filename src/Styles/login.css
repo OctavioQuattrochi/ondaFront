@@ -86,3 +86,13 @@ input::placeholder {
   background-color: #4D47C3 !important;
   box-shadow: 0 0 10px 5px rgba(77, 71, 195, 0.5) !important; /* Sombra difuminada */
 }
+
+.link { 
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+  color: #4D47C3;
+}

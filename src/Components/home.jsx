@@ -57,7 +57,7 @@ const Home = () => {
       </div>
 
       {/* Somos fans del cielo */}
-      <div class="contenedor-fondo">
+      <div className="contenedor-fondo">
         <h1>Y que somos dnas del cielo</h1>
         <h1>y de sus atardeceres.</h1>
         <p>Encontramos inspiración en la luz, en el sol, en los<br />
