@@ -1,85 +1,57 @@
+/* Fondo negro global */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background-color: #000;
+}
+
+/* Estilo general de la página del team */
 .team-page {
-  color: white; /* Texto en blanco */
-  padding: 20px; /* Espacio interno */
-  text-align: center; /* Centrar el contenido */
+  color: white;
+  padding: 60px 40px;
   display: flex;
-  flex-direction: column; /* Alinear verticalmente los elementos */
-  justify-content: center; /* Centrar verticalmente */
-  align-items: center; /* Centrar horizontalmente */
-  width: 100%; /* Asegurar que ocupa todo el ancho */
-  max-width: 1200px; /* Limitar el ancho máximo si lo deseas */
-  box-sizing: border-box; /* Incluir el padding en el cálculo del ancho y alto */
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-
+/* Título grande y centrado */
 .team-title {
-  font-size: 36px; /* Tamaño del título */
-  margin-bottom: 40px; /* Espacio debajo del título */
+  font-size: 32px;
+  margin-bottom: 60px;
+  text-align: center;
 }
 
+/* Contenedor de los miembros */
 .team-container {
   display: flex;
-  justify-content: center; /* Centrar los contenedores de los miembros */
-  gap: 20px; /* Espacio entre los contenedores */
-  flex-wrap: wrap; /* Ajustar el diseño si hay muchas imágenes */
+  justify-content: center;
+  gap: 60px;
+  flex-wrap: wrap;
 }
 
+/* Cada miembro */
 .team-member {
   display: flex;
-  flex-direction: column; /* Colocar imagen y label en columna */
-  align-items: center; /* Centrar horizontalmente */
+  flex-direction: column;
+  align-items: center;
 }
 
+/* Imagen redondeada grande */
 .team-image {
-  width: 150px; /* Ancho y alto iguales para hacerlas cuadradas */
-  height: 150px;
-  border-radius: 8px; /* Bordes redondeados de 8px */
-  object-fit: cover; /* Ajustar la imagen para que cubra el área del contenedor */
-  margin-bottom: 10px; /* Espacio entre la imagen y el label */
+  width: 180px;
+  height: 180px;
+  border-radius: 20px;
+  object-fit: cover;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  transition: opacity 0.3s ease;
 }
 
-.team-name {
-  font-size: 18px; /* Tamaño del texto del nombre */
-}
-
-/* Efecto hover para las imágenes */
 .team-image:hover {
   opacity: 0.8;
-  transition: opacity 0.3s;
 }
 
-/* Scroll vertical si el contenido es más alto que la pantalla en móviles */
-@media (max-width: 768px) {
-  body {
-    overflow-y: auto; /* Scroll en vertical si es necesario */
-  }
-
-  .team-container {
-    flex-direction: column; /* Los miembros del equipo uno debajo del otro */
-  }
-
-  .team-member {
-    margin-bottom: 20px; /* Espacio entre miembros del equipo */
-  }
-
-  .team-image {
-    width: 100px; /* Ajustar tamaño de imagen para pantallas más pequeñas */
-    height: 100px;
-  }
-
-  .team-name {
-    font-size: 16px; /* Reducir el tamaño del texto en pantallas pequeñas */
-  }
-}
-
-/* Responsive design para pantallas medianas */
-@media (max-width: 1200px) {
-  .team-image {
-    width: 120px;
-    height: 120px;
-  }
-
-  .team-name {
-    font-size: 17px;
-  }
-}

@@ -1,96 +1,93 @@
-  
-  .catalog-page {
-    color: white;
-    padding: 20px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-  }
-  
-  .catalog-title {
-    font-size: 36px;
-    margin-bottom: 40px;
-  }
-  
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #0d0d0d;
+  color: white;
+}
+
+.catalog-page {
+  padding: 60px 20px;
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  box-sizing: border-box;
+}
+
+.catalog-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 50px;
+  text-transform: uppercase;
+}
+
+.product-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.product-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: transparent;
+  border-radius: 20px;
+  width: 220px;
+  transition: transform 0.3s ease;
+}
+
+.product-item:hover {
+  transform: scale(1.05);
+}
+
+.product-image {
+  width: 100%;
+  height: 220px;
+  border-radius: 20px;
+  object-fit: cover;
+  margin-bottom: 15px;
+  transition: opacity 0.3s;
+}
+
+.product-image:hover {
+  opacity: 0.9;
+}
+
+.product-name {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.product-price {
+  font-size: 17px;
+  color: #ccc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
   .product-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  
-  .product-item {
-    display: flex;
     flex-direction: column;
     align-items: center;
   }
-  
+
+  .product-item {
+    width: 80%;
+  }
+
   .product-image {
-    width: 150px;
-    height: 150px;
-    border-radius: 8px;
-    object-fit: cover;
-    margin-bottom: 10px;
+    height: 180px;
   }
-  
-  .product-name {
-    font-size: 18px;
-  }
-  
-  .product-price {
-    font-size: 16px;
-    margin-top: 5px;
-  }
-  
-  .product-image:hover {
-    opacity: 0.8;
-    transition: opacity 0.3s;
-  }
-  
-  /* Diseño responsive para móviles */
-  @media (max-width: 768px) {
-    body {
-      overflow-y: auto;
-    }
-  
-    .product-container {
-      flex-direction: column;
-    }
-  
-    .product-item {
-      margin-bottom: 20px;
-    }
-  
-    .product-image {
-      width: 100px;
-      height: 100px;
-    }
-  
-    .product-name {
-      font-size: 16px;
-    }
-  
-    .product-price {
-      font-size: 14px;  
-    }
-  }
-  
-  /* Diseño responsive para pantallas medianas */
-  @media (max-width: 1200px) {
-    .product-image {
-      width: 120px;
-      height: 120px;
-    }
-  
-    .product-name {
-      font-size: 17px;
-    }
-  
-    .product-price {
-      font-size: 15px;
-    }
-  }
-  
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background-color: #0d0d0d;
+}
