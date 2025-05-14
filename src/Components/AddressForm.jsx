@@ -1,11 +1,21 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../Styles/AddressForm.css';
 
 export default function AddressForm() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Lógica adicional si hace falta
+    navigate('/mis-compras'); // Redirige como en otros componentes
+  };
+
   return (
     <div className="address-form-container">
       <h2 className="form-title">Datos de envío</h2>
-      <form className="address-form">
+      <form className="address-form" onSubmit={handleSubmit}>
+        {/* Todos los inputs */}
         <label htmlFor="direccion">Dirección</label>
         <input type="text" id="direccion" name="direccion" required />
 
@@ -18,7 +28,6 @@ export default function AddressForm() {
           <option value="Buenos Aires">Buenos Aires</option>
           <option value="Córdoba">Córdoba</option>
           <option value="Santa Fe">Santa Fe</option>
-          {/* Agregá más provincias si querés */}
         </select>
 
         <label htmlFor="dni">DNI</label>

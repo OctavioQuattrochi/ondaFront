@@ -1,0 +1,96 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #121212;
+}
+
+.presupuestos-container {
+  background-color: #121212;
+  padding: 2rem;
+  border-radius: 20px;
+  max-width: 1000px;
+  margin: auto;
+  margin-top: 40px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+  color: white;
+  min-height: 100vh;
+  height: auto;
+  padding-bottom: 5rem; 
+}
+
+
+.titulo {
+  text-align: center;
+  background-color: #3f3f3f;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+
+.tabla-container {
+  overflow-x: auto;
+  background-color: #3f3f3f;
+  border-radius: 10px;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  color: white;
+}
+
+.tabla th,
+.tabla td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #666;
+}
+
+.tabla th {
+  background-color: #2e2e2e;
+}
+
+.botones {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.botones button {
+  background-color: #5b5bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.botones button:hover {
+  background-color: #7878ff;
+}
+
+.botones .cancelar {
+  background-color: #3a3a3a;
+}
+
+.botones .cancelar:hover {
+  background-color: #555;
+}
+.ver-detalle-btn {
+  background-color: #5b5bff;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.ver-detalle-btn:hover {
+  background-color: #7878ff;
+}

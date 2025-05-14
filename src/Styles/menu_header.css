@@ -1,18 +1,18 @@
 .header {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Centrar verticalmente los elementos */
-    padding: 20px 40px; /* Agrega 40px de padding a los costados */
+    align-items: center;
+    padding: 0 5px; 
+    margin: 0;
     background-color: black;
     color: white;
-    position: fixed; /* Fijar el header en la parte superior */
+    position: fixed;
     top: 0;
-    width: calc(100% - 80px); /* Resta el padding horizontal al ancho */
-    z-index: 1000; /* Asegurar que esté por encima de otros elementos */
     left: 0;
-    right: 0;
-    margin: 0 auto;
+    width: 100%;
+    z-index: 1000;
 }
+
 
 .header .logo {
     font-size: 24px;
@@ -46,4 +46,8 @@
 
 img.logo-image{
     width: 25%;
+}
+
+.logo {
+    margin-bottom: 0px !important;
 }

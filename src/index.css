@@ -13,6 +13,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+main {
+  margin-top: 60px; /* misma altura que el header, para evitar que el contenido se tape */
+}
+
+
 body, html{
   margin: 0;
   padding: 0;

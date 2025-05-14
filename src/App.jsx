@@ -11,8 +11,13 @@ import Login from './Components/login';
 import Home from './Components/home';
 import Register from './Components/register';
 import AddressForm from './Components/AddressForm';
-
-
+import MisCompras from './Components/MisCompras'
+import MisPresupuestos from './Components/MisPresupuestos';
+import Produccion from './Components/Produccion';
+import StockMateria from './Components/StockMateriaPrima';
+import StockProductos from './Components/StockProductos';
+import Presupuestos from './Components/SuperAdmin/Presupuestos';
+import PresupuestoDetalle from './Components/SuperAdmin/PresupuestoDetalle';
 
 
 function App() {
@@ -31,7 +36,15 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/AddressForm" element={<AddressForm />} />
-            {/* Puedes agregar otras rutas aquí */}
+            <Route path="/mis-compras" element={<MisCompras />} />
+            <Route path="/mis-presupuestos" element={<MisPresupuestos />} />
+            <Route path="/produccion" element={<Produccion />} />
+           <Route path="/stok-materia" element={<StockMateria />} />
+          <Route path="/stock-productos" element={<StockProductos />} />
+          <Route path="/presupuestos" element={<Presupuestos />} />
+          <Route path="/detalle-presupuesto" element={<PresupuestoDetalle />} />
+
+
           </Routes>
         </main>
         {/* <Footer /> */}
