@@ -1,0 +1,100 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #0d0d0d;
+    color: white;
+  }
+  
+  .register-page {
+    min-height: 100vh;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #0d0d0d;
+  }
+  
+  .register-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  
+  .register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    max-width: 500px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  label {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  .form-input {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #eee9ff;
+    color: #333;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .form-input::placeholder {
+    color: #a59fbd;
+  }
+  
+  .password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .eye-icon {
+    position: absolute;
+    right: 12px;
+    color: #999;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  .register-input {
+    background-color: #f2f0ff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 14px;
+    width: 100%;
+  }
+  
+  .form-button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  
+  .register-button {
+    background-color: #7b5bff;
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 10px rgba(123, 91, 255, 0.4);
+  }
+  
+  .register-button:hover {
+    background-color: #5e44cc;
+  }
+  

@@ -9,6 +9,10 @@ import Store from './Components/store';
 import Product_sheet from './Components/product_sheet';
 import Login from './Components/login';
 import Home from './Components/home';
+import Register from './Components/register';
+import AddressForm from './Components/AddressForm';
+
+
 
 
 function App() {
@@ -25,6 +29,8 @@ function App() {
             <Route path="/product_sheet" element={<Product_sheet />} />
             <Route path="/customs" element={<Customs />} />
             <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/AddressForm" element={<AddressForm />} />
             {/* Puedes agregar otras rutas aquí */}
           </Routes>
         </main>

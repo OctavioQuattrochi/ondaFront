@@ -18,7 +18,7 @@ const Customs = () => {
                 viewBox="0 0 48 48"
                 fill="#888"
               >
-                <path d="M22.5 31.5h3v-9.85l3.65 3.6 2.1-2.1-7.3-7.3-7.3 7.3 2.1 2.1 3.65-3.6ZM9 42q-1.2 0-2.1-.9Q6 40.2 6 39V9q0-1.2.9-2.1Q7.8 6 9 6h30q1.2 0 2.1.9.9.9.9 2.1v30q0 1.2-.9 2.1-.9.9-2.1.9Z"/>
+                <path d="M22.5 31.5h3v-9.85l3.65 3.6 2.1-2.1-7.3-7.3-7.3 7.3 2.1 2.1 3.65-3.6ZM9 42q-1.2 0-2.1-.9Q6 40.2 6 39V9q0-1.2.9-2.1Q7.8 6 9 6h30q1.2 0 2.1.9.9.9.9 2.1v30q0 1.2-.9 2.1-.9.9-2.1.9Z" />
               </svg>
             </div>
           </label>
@@ -29,30 +29,34 @@ const Customs = () => {
           <h2 className="subtitle">Personaliza el tuyo</h2>
 
           <div className="input-group">
-            <label htmlFor="height">Tamaño</label>
-            <div className="input-size">
-              <input
-                type="number"
-                id="height"
-                placeholder="Alto"
-                className="numeric-input"
-                min="1"
-                defaultValue="50"
-              />
-              <span className="unit">cm</span>
-            </div>
-            <div className="input-size">
-              <input
-                type="number"
-                id="width"
-                placeholder="Ancho"
-                className="numeric-input"
-                min="1"
-                defaultValue="80"
-              />
-              <span className="unit">cm</span>
+            <label>Tamaño</label>
+            <div className="input-row">
+              <div className="input-size">
+                <span className="input-label">Alto</span>
+                <input
+                  type="number"
+                  id="height"
+                  className="numeric-input"
+                  min="1"
+                  defaultValue="50"
+                />
+                <span className="unit">cm</span>
+              </div>
+              <div className="input-size">
+                <span className="input-label">Ancho</span>
+                <input
+                  type="number"
+                  id="width"
+                  className="numeric-input"
+                  min="1"
+                  defaultValue="80"
+                />
+                <span className="unit">cm</span>
+              </div>
             </div>
           </div>
+
+
 
           <div className="input-group">
             <label htmlFor="color">Color</label>
