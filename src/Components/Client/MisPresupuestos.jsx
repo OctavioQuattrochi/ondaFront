@@ -1,6 +1,7 @@
 import React from "react";
-import Sidebar from "./Sidebar";
-import "../Styles/MisCompras.css";
+import Sidebar from "../Shared/Sidebar";
+import "../../Styles/Client/MisCompras.css";
+
 
 const presupuestos = [
   { id: 1, detalle: "Corazon rojo", precio: "$3999", estado: "Entregado" },

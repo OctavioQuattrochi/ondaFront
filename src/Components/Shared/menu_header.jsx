@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; 
-import '../Styles/menu_header.css'; 
-import isologo from '../sources/isologo.png';
+import '../../Styles/Shared/menu_header.css'; 
+import isologo from "../../sources/isologo.png";
 
 function Header() {
   return (

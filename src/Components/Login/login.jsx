@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Container, Paper } from '@mui/material';
-import '../Styles/login.css';
-import { Link } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
+import '../../Styles/Login/login.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({ email: '', password: '' });
+
+  const navigate = useNavigate(); // Hook de navegación
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -16,12 +17,12 @@ export default function Login() {
     let newErrors = { email: '', password: '' };
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Please enter a valid email address.';
+      newErrors.email = 'Por favor ingresá un correo válido.';
       valid = false;
     }
 
     if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long.';
+      newErrors.password = 'La clave debe tener al menos 6 caracteres.';
       valid = false;
     }
 
@@ -29,12 +30,12 @@ export default function Login() {
 
     if (valid) {
       console.log('Logged in with', { email, password });
+      navigate("/mis-compras"); // Redirección si es válido
     }
   };
 
   return (
     <Container component="main" maxWidth="xs" className="login-container">
-      {/* Nuevo título con estilos personalizados */}
       <Typography variant="h4" className="login-header">
         Ingresar en <br />
         <span className="login-header-onda">Onda estudio</span>
@@ -86,10 +87,8 @@ export default function Login() {
               Crear cuenta
             </Link>
           </Typography>
-
         </form>
       </Paper>
     </Container>
-
   );
 }

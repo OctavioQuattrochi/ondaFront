@@ -1,11 +1,12 @@
 import React from 'react';
-import '../Styles/Produccion.css';
-import SidebarEmpleado from '../Components/SidebarAdmin';
+import Sidebar from '../Shared/Sidebar';
+import '../../Styles/Admin/Produccion.css';
+
 
 const Produccion = () => {
   return (
     <div className="produccion-layout">
-      <SidebarEmpleado />
+      <Sidebar />
       <div className="produccion-container">
         <h1 className="produccion-titulo">Producción</h1>
 

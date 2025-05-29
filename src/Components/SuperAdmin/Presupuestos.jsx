@@ -1,5 +1,5 @@
 import React from 'react';
-import SidebarSuperAdmin from './SidebarSuperAdmin';
+import Sidebar from '../Shared/Sidebar';
 import '../../Styles/SuperAdmin/Presupuestos.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ const Presupuestos = () => {
 
   return (
     <div style={{ display: 'flex' }}>
-      <SidebarSuperAdmin />
+      <Sidebar />
       
       <div className="presupuestos-container">
         <h2 className="titulo">Presupuestos a confirmar</h2>

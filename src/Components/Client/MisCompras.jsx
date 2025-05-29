@@ -1,6 +1,6 @@
 import React from "react";
-import Sidebar from "./Sidebar";
-import "../Styles/MisCompras.css";
+import Sidebar from '../Shared/Sidebar';
+import "../../Styles/Client/MisCompras.css";
 
 const compras = [
   { producto: "Onda bb", precio: "$6999", estado: "Entregado" },

@@ -1,11 +1,11 @@
 import React from 'react';
-import '../Styles/StockProductos.css';
-import SidebarEmpleado from './SidebarAdmin';
+import Sidebar from '../Shared/Sidebar';
+import '../../Styles/Admin/StockProductos.css';
 
 const StockProductos = () => {
   return (
     <div className="stock-productos-layout">
-      <SidebarEmpleado />
+      <Sidebar />
       <div className="stock-productos-container">
         <h1 className="titulo">Stock de productos</h1>
 
