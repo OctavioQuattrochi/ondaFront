@@ -37,3 +37,20 @@
   margin: 10px 0;
   cursor: pointer;
 }
+
+.sidebar-link {
+  color: #ffffff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  color: #a95ff7; /* el violeta que querés para hover y activo */
+
+}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   PackageOpen,
   Package,
@@ -11,45 +11,61 @@ import "../../Styles/Shared/Sidebar.css";
 export default function Sidebar() {
   return (
     <div className="sidebar">
-      <input type="text" className="search-input" placeholder="Ingrese su busqueda" />
+      <input type="text" className="search-input" placeholder="Ingrese su búsqueda" />
       <ul className="sidebar-menu">
         <li>
-          <Link to="/mis-compras" className="sidebar-link">
+          <NavLink
+            to="/mis-compras"
+            className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+          >
             <PackageOpen size={18} style={{ marginRight: "8px" }} />
             Mis compras
-          </Link>
+          </NavLink>
         </li>
         <li>
-          <Link to="/mis-presupuestos" className="sidebar-link">
+          <NavLink
+            to="/mis-presupuestos"
+            className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+          >
             <FileText size={18} style={{ marginRight: "8px" }} />
             Mis presupuestos
-          </Link>
+          </NavLink>
         </li>
-        ---
         <li>
-          <Link to="/stok-materia" className="sidebar-link">
+          <NavLink
+            to="/stok-materia"
+            className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+          >
             <PackageOpen size={18} style={{ marginRight: "8px" }} />
             Stock de materia prima
-          </Link>
+          </NavLink>
         </li>
         <li>
-          <Link to="/stock-productos" className="sidebar-link">
+          <NavLink
+            to="/stock-productos"
+            className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+          >
             <Package size={18} style={{ marginRight: "8px" }} />
             Stock de productos
-          </Link>
+          </NavLink>
         </li>
         <li>
-          <Link to="/produccion" className="sidebar-link">
+          <NavLink
+            to="/produccion"
+            className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+          >
             <Hammer size={18} style={{ marginRight: "8px" }} />
             Producción
-          </Link>
+          </NavLink>
         </li>
-        ---
         <li>
-          <Link to="/presupuestos" className="sidebar-link">
+          <NavLink
+            to="/presupuestos"
+            className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+          >
             <FileText size={18} style={{ marginRight: "8px" }} />
             Presupuesto a Confirmar
-          </Link>
+          </NavLink>
         </li>
       </ul>
     </div>
