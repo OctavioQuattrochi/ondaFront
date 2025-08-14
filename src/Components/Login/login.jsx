@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TextField, Button, Typography, Container, Paper } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../Styles/Login/login.css';
+import AuthService from '../../Service/AuthService';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -10,7 +11,7 @@ export default function Login() {
 
   const navigate = useNavigate(); // Hook de navegación
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     let valid = true;
@@ -29,8 +30,12 @@ export default function Login() {
     setErrors(newErrors);
 
     if (valid) {
-      console.log('Logged in with', { email, password });
-      navigate("/mis-compras"); // Redirección si es válido
+      try {
+        await AuthService.login(email, password);
+        navigate("/mis-compras");
+      } catch (err) {
+        setErrors({ ...newErrors, password: 'Credenciales incorrectas.' });
+      }
     }
   };
 

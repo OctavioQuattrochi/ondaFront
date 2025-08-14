@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from '../Shared/Sidebar';
 import "../../Styles/Client/MisCompras.css";
-
-const compras = [
-  { producto: "Onda bb", precio: "$6999", estado: "Entregado" },
-  { producto: "Onda Sunset", precio: "$6999", estado: "Pendiente" },
-  { producto: "Onda bb", precio: "$6999", estado: "Pendiente" },
-];
+import AuthService from "../../Service/AuthService";
 
 export default function MisCompras() {
+  const [orders, setOrders] = useState([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    AuthService.getOrders()
+      .then(data => setOrders(data))
+      .catch(() => setError("No se pudieron cargar las compras."));
+  }, []);
+
   return (
     <div className="mis-compras-layout"> 
       <Sidebar />
@@ -18,27 +22,45 @@ export default function MisCompras() {
           <table className="tabla-compras">
             <thead>
               <tr>
-                <th>Producto</th>
-                <th>Precio</th>
+                <th>ID Orden</th>
+                <th>Productos</th>
+                <th>Total</th>
                 <th>Estado</th>
               </tr>
             </thead>
             <tbody>
-              {compras.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.producto}</td>
-                  <td>{item.precio}</td>
+              {orders.length === 0 && (
+                <tr>
+                  <td colSpan={4}>No hay compras registradas.</td>
+                </tr>
+              )}
+              {orders.map((order) => (
+                <tr key={order.id}>
+                  <td>{order.id}</td>
+                  <td>
+                    <ul>
+                      {order.items.map((item, idx) => (
+                        <li key={idx}>
+                          {item.product ? item.product.name : "Producto eliminado"} x{item.quantity}
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td>${order.total}</td>
                   <td
                     className={
-                      item.estado === "Entregado" ? "entregado" : "pendiente"
+                      order.status === "delivered" || order.status === "entregado"
+                        ? "entregado"
+                        : "pendiente"
                     }
                   >
-                    {item.estado}
+                    {order.status}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {error && <div style={{ color: "red" }}>{error}</div>}
         </div>
       </div>
     </div>
