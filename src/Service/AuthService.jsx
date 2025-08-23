@@ -51,24 +51,28 @@ const AuthService = {
     }
   },
 
-  async getRawMaterials() {
-    try {
-      const response = await axios.get(`${API_URL}/api/raw-materials`);
-      return response.data;
-    } catch (error) {
-      console.error("Error al obtener materias primas:", error);
-      throw error;
-    }
+  getRawMaterials: async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.get("http://localhost:8123/api/raw-materials", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    return response.data;
   },
 
-  async getPredefinedProducts() {
-    try {
-      const response = await axios.get(`${API_URL}/api/predefined-products`);
-      return response.data;
-    } catch (error) {
-      console.error("Error al obtener productos predefinidos:", error);
-      throw error;
-    }
+  getPredefinedProducts: async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await fetch("http://localhost:8123/api/predefined-products", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+    if (!response.ok) throw new Error("No autorizado");
+    return await response.json();
   },
 
   async getProducts() {
@@ -107,7 +111,75 @@ const AuthService = {
       console.error("Error al crear producto:", error);
       throw error;
     }
-  }
+  },
+
+  async analyzeCustom({ image, height, width, color, quantity }) {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const formData = new FormData();
+    formData.append("image", image);
+    formData.append("height", height);
+    formData.append("width", width);
+    formData.append("color", color);
+    formData.append("quantity", quantity);
+
+    return await axios.post(`${API_URL}/api/analyze`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data"
+      }
+    });
+  },
+
+  getQuotes: async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.get(`${API_URL}/api/quotes`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  },
+
+  getPendingQuotes: async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.get("http://localhost:8123/api/presupuestos", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    return response.data;
+  },
+
+  getQuoteById: async (id) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await fetch(`http://localhost:8123/api/quotes/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+    if (!response.ok) throw new Error("No autorizado");
+    return await response.json();
+  },
+
+  updateQuote: async (id, data) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await fetch(`http://localhost:8123/api/quotes/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error("No autorizado");
+    return await response.json();
+  },
 };
 
 export default AuthService;

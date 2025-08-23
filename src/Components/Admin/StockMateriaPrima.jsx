@@ -13,18 +13,20 @@ const StockMateriaPrima = () => {
   useEffect(() => {
     AuthService.getRawMaterials()
       .then(data => {
-        setMaterials(data);
+        // Asegura que data siempre sea un array
+        const mats = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
+        setMaterials(mats);
         // Extraer ubicaciones únicas para el select
-        const uniqueLocations = Array.from(new Set(data.map(mat => mat.location).filter(Boolean)));
+        const uniqueLocations = Array.from(new Set(mats.map(mat => mat.location || mat.supplier).filter(Boolean)));
         setLocations(uniqueLocations);
       })
       .catch(() => setError("No se pudieron cargar las materias primas."));
   }, []);
 
-  // Filtrado por nombre de material y ubicación
+  // Filtrado por nombre de material (usa mat.material) y ubicación
   const filteredMaterials = materials.filter(mat => {
-    const matchMaterial = mat.name?.toLowerCase().includes(materialFilter.toLowerCase());
-    const matchLocation = locationFilter ? mat.location === locationFilter : true;
+    const matchMaterial = (mat.material || "").toLowerCase().includes(materialFilter.toLowerCase());
+    const matchLocation = locationFilter ? (mat.location === locationFilter || mat.supplier === locationFilter) : true;
     return matchMaterial && matchLocation;
   });
 
@@ -47,7 +49,7 @@ const StockMateriaPrima = () => {
             />
           </div>
           <div className="campo">
-            <label htmlFor="location-select">Ubicación</label>
+            <label htmlFor="location-select">Ubicación / Proveedor</label>
             <select
               id="location-select"
               value={locationFilter}
@@ -69,7 +71,7 @@ const StockMateriaPrima = () => {
               <th>Estado</th>
               <th>Cantidad</th>
               <th>Tipo de medida</th>
-              <th>Ubicación</th>
+              <th>Ubicación / Proveedor</th>
             </tr>
           </thead>
           <tbody>
@@ -85,12 +87,12 @@ const StockMateriaPrima = () => {
             )}
             {filteredMaterials.map((mat) => (
               <tr key={mat.id}>
-                <td>{mat.name}</td>
+                <td>{mat.material || "--"}</td>
                 <td>{mat.description || "--"}</td>
                 <td>{mat.status || "--"}</td>
                 <td>{mat.quantity}</td>
                 <td>{mat.unit || "--"}</td>
-                <td>{mat.location || "--"}</td>
+                <td>{mat.location || mat.supplier || "--"}</td>
               </tr>
             ))}
           </tbody>

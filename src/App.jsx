@@ -43,7 +43,7 @@ function App() {
           <Route path="/stock-productos" element={<StockProductos />} />
           <Route path="/presupuestos" element={<Presupuestos />} />
           <Route path="/detalle-presupuesto" element={<PresupuestoDetalle />} />
-
+          <Route path="/detalle-presupuesto/:id" element={<PresupuestoDetalle />} />
 
           </Routes>
         </main>

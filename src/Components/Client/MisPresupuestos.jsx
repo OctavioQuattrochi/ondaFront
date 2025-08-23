@@ -1,15 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../Shared/Sidebar";
 import "../../Styles/Client/MisCompras.css";
-
-
-const presupuestos = [
-  { id: 1, detalle: "Corazon rojo", precio: "$3999", estado: "Entregado" },
-  { id: 2, detalle: "Lomito amarillo", precio: "$------", estado: "Pendiente" },
-  { id: 3, detalle: "Flecha azul", precio: "$------", estado: "Pendiente" },
-];
+import AuthService from "../../Service/AuthService";
 
 export default function MisPresupuestos() {
+  const [presupuestos, setPresupuestos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    AuthService.getQuotes()
+      .then((data) => {
+        // Asegura que presupuestos siempre sea un array
+        if (Array.isArray(data)) {
+          setPresupuestos(data);
+        } else if (Array.isArray(data.data)) {
+          setPresupuestos(data.data);
+        } else if (Array.isArray(data.quotes)) {
+          setPresupuestos(data.quotes);
+        } else {
+          setPresupuestos([]);
+        }
+      })
+      .catch(() => setPresupuestos([]))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="mis-compras-layout">
       <Sidebar />
@@ -19,23 +34,38 @@ export default function MisPresupuestos() {
           <table className="tabla-compras">
             <thead>
               <tr>
-                <th>Personalizado</th>
+                <th>ID</th>
                 <th>Detalle</th>
                 <th>Precio</th>
                 <th>Estado</th>
               </tr>
             </thead>
             <tbody>
-              {presupuestos.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.id}</td>
-                  <td>{item.detalle}</td>
-                  <td>{item.precio}</td>
-                  <td className={item.estado === "Entregado" ? "entregado" : "pendiente"}>
-                    {item.estado}
-                  </td>
+              {loading ? (
+                <tr>
+                  <td colSpan={4}>Cargando...</td>
                 </tr>
-              ))}
+              ) : Array.isArray(presupuestos) && presupuestos.length === 0 ? (
+                <tr>
+                  <td colSpan={4}>No tienes presupuestos aún.</td>
+                </tr>
+              ) : (
+                Array.isArray(presupuestos) &&
+                presupuestos.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.id}</td>
+                    <td>
+                      {item.color} - {item.height_cm}x{item.width_cm}cm
+                    </td>
+                    <td>
+                      {item.estimated_price
+                        ? `$${Number(item.estimated_price).toLocaleString("es-AR")}`
+                        : "$------"}
+                    </td>
+                    <td className="pendiente">Pendiente</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

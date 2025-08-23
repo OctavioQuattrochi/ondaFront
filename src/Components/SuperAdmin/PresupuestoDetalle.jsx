@@ -1,10 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from '../Shared/Sidebar';
 import '../../Styles/SuperAdmin/PresupuestoDetalle.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import AuthService from "../../Service/AuthService";
 
 const PresupuestoDetalle = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  const [presupuesto, setPresupuesto] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [precioFinal, setPrecioFinal] = useState("");
+  const [estado, setEstado] = useState("pendiente");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    AuthService.getQuoteById(id)
+      .then(data => {
+        setPresupuesto(data);
+        setPrecioFinal(data.estimated_price || "");
+        setEstado(data.status || "pendiente");
+      })
+      .catch(() => setError("No se pudo cargar el presupuesto."))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  const handleGuardar = async () => {
+    try {
+      await AuthService.updateQuote(id, {
+        estimated_price: precioFinal,
+        status: estado,
+      });
+      navigate(-1); // Vuelve atrás al guardar
+    } catch {
+      setError("No se pudo guardar el presupuesto.");
+    }
+  };
+
+  if (loading) return <div>Cargando...</div>;
+  if (error) return <div style={{ color: "red" }}>{error}</div>;
+  if (!presupuesto) return <div>No se encontró el presupuesto.</div>;
 
   return (
     <div style={{ display: 'flex' }}>
@@ -15,21 +50,37 @@ const PresupuestoDetalle = () => {
 
         <div className="detalle-contenido">
           <div className="detalle-info">
-            <p>Producto personalizado Nº156 - Cliente 9: Pedro</p>
-            <p><strong>Tamaño:</strong> 130 × 80 centímetros</p>
-            <p><strong>Color:</strong> Azul - Rojo - Blanco</p>
-            <p><strong>Especificaciones del cliente:</strong> -</p>
-            <p><strong>Total de metros a utilizar:</strong></p>
+            <p>Producto personalizado Nº{presupuesto.id} - Cliente {presupuesto.user_id}: {presupuesto.user?.name || "--"}</p>
+            <p><strong>Tamaño:</strong> {presupuesto.width_cm} × {presupuesto.height_cm} centímetros</p>
+            <p><strong>Color:</strong> {presupuesto.color}</p>
+            <p><strong>Especificaciones del cliente:</strong> {presupuesto.note || "-"}</p>
+            <p><strong>Total de metros a utilizar:</strong> {/* Puedes calcularlo si tienes el dato */}</p>
 
-            <label><strong>Costo:</strong> $ <input value="5000" readOnly /></label>
-            <label><strong>Porcentaje de ganancia:</strong> <input value="75" readOnly /> %</label>
-            <label><strong>Precio propuesto:</strong> $ <input value="8750" readOnly /></label>
+            <label>
+              <strong>Precio final:</strong> $ 
+              <input
+                type="number"
+                value={precioFinal}
+                onChange={e => setPrecioFinal(e.target.value)}
+                min="0"
+              />
+            </label>
 
-            <button className="guardar-btn">Guardar</button>
+            <label>
+              <strong>Estado:</strong>
+              <select value={estado} onChange={e => setEstado(e.target.value)}>
+                <option value="pendiente">Pendiente</option>
+                <option value="aceptado">Aceptar</option>
+                <option value="rechazado">Rechazar</option>
+              </select>
+            </label>
+
+            <button className="guardar-btn" onClick={handleGuardar}>Guardar</button>
           </div>
 
           <div className="detalle-imagen">
-            <img src="/ruta/a/imagen.jpg" alt="Producto" />
+            {/* Si tienes la imagen, muéstrala aquí */}
+            {/* <img src={presupuesto.image_url} alt="Producto" /> */}
           </div>
         </div>
 
