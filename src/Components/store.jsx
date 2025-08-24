@@ -1,30 +1,91 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthService from "../Service/AuthService";
 import '../Styles/store.css';
-import bb from '../sources/store/bb.png'; 
-import sunset from '../sources/store/Sunset.png'; 
-import astro from '../sources/store/Astro.png';
+
+import sunsetImg from '../sources/store/Sunset.png';
+import bbImg from '../sources/store/bb.png';
+import astroImg from '../sources/store/Astro.png';
 
 const Store = () => {
+  const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    AuthService.getPredefinedProducts()
+      .then(data => {
+        setProductos(Array.isArray(data) ? data : []);
+        setError("");
+      })
+      .catch(() => setError("No se pudieron cargar los productos."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleClick = async (id) => {
+    const logged = await AuthService.isLoggedIn();
+    if (!logged) {
+      setShowPopup(true);
+      return;
+    }
+    navigate(`/producto/${id}`);
+  };
+
+  const getImageForProduct = (name) => {
+    if (!name) return "";
+    const lower = name.toLowerCase();
+    if (lower.includes('sunset')) return sunsetImg;
+    if (lower.includes('bb')) return bbImg;
+    if (lower.includes('astro')) return astroImg;
+    return "";
+  };
+
+  const handlePopupAccept = () => {
+    setShowPopup(false);
+    navigate("/login");
+  };
+
   return (
     <div className="catalog-page">
       <h1 className="catalog-title">NUESTRAS ONDAS</h1>
-      <div className="product-container">
-        <div className="product-item">
-          <img className="product-image" src={bb} alt="Onda bb" />
-          <div className="product-name">Onda bb</div>
-          <div className="product-price">$7.999</div>
+      {loading ? (
+        <div>Cargando productos...</div>
+      ) : error ? (
+        <div style={{ color: "red" }}>{error}</div>
+      ) : (
+        <div className="product-container">
+          {productos.map(prod => (
+            <div
+              className="product-item"
+              key={prod.id}
+              onClick={() => handleClick(prod.id)}
+              style={{ cursor: "pointer" }}
+            >
+              <img
+                className="product-image"
+                src={getImageForProduct(prod.name)}
+                alt={prod.name}
+              />
+              <div className="product-name">{prod.name}</div>
+              <div className="product-price">${prod.price}</div>
+            </div>
+          ))}
         </div>
-        <div className="product-item">
-          <img className="product-image" src={sunset} alt="Onda Sunset" />
-          <div className="product-name">Onda Sunset</div>
-          <div className="product-price">$7.999</div>
+      )}
+
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-modal">
+            <h2>¡Atención!</h2>
+            <p>Para continuar debe estar logueado.</p>
+            <button className="popup-btn" onClick={handlePopupAccept}>
+              Aceptar
+            </button>
+          </div>
         </div>
-        <div className="product-item">
-          <img className="product-image" src={astro} alt="Onda Astros" />
-          <div className="product-name">Onda Astros</div>
-          <div className="product-price">$7.499</div>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

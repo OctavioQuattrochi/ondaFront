@@ -4,113 +4,72 @@ const API_URL = "http://localhost:8123";
 
 const AuthService = {
   async login(email, password) {
-    try {
-      const response = await axios.post(`${API_URL}/api/login`, {
-        email,
-        password,
-      });
-      if (response.data.access_token) {
-        localStorage.setItem("user", JSON.stringify(response.data));
-      }
-      return response.data;
-    } catch (error) {
-      console.error("Login failed:", error);
-      throw error;
+    const response = await axios.post(`${API_URL}/api/login`, { email, password });
+    if (response.data.access_token) {
+      localStorage.setItem("user", JSON.stringify(response.data));
     }
+    return response.data;
   },
 
   async register(name, email, password, lastname, password_confirmation) {
-    try {
-      const response = await axios.post(`${API_URL}/api/register`, {
-        name,
-        email,
-        password,
-        lastname,
-        password_confirmation
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Registration failed:", error);
-      throw error;
-    }
+    const response = await axios.post(`${API_URL}/api/register`, {
+      name,
+      email,
+      password,
+      lastname,
+      password_confirmation
+    });
+    return response.data;
   },
 
   async getOrders() {
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const token = user?.access_token;
-      const response = await axios.get(`${API_URL}/api/orders`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error al obtener órdenes:", error);
-      throw error;
-    }
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.get(`${API_URL}/api/orders`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
   },
 
   getRawMaterials: async () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.access_token;
-    const response = await axios.get("http://localhost:8123/api/raw-materials", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
+    const response = await axios.get(`${API_URL}/api/raw-materials`, {
+      headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
   },
 
   getPredefinedProducts: async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = user?.access_token;
-    const response = await fetch("http://localhost:8123/api/predefined-products", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
-    });
-    if (!response.ok) throw new Error("No autorizado");
-    return await response.json();
+    const response = await axios.get(`${API_URL}/api/predefined-products`);
+    return response.data;
   },
 
   async getProducts() {
-    try {
-      const response = await axios.get(`${API_URL}/api/products`);
-      return response.data;
-    } catch (error) {
-      console.error("Error al obtener productos:", error);
-      throw error;
-    }
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.get(`${API_URL}/api/products`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
   },
 
   async getPersonalizados() {
-    // Si tienes un endpoint para personalizados, usa ese.
-    // Si no, filtra los productos por algún campo especial en el frontend.
-    try {
-      const response = await axios.get(`${API_URL}/api/products?type=personalizado`);
-      return response.data;
-    } catch (error) {
-      console.error("Error al obtener personalizados:", error);
-      throw error;
-    }
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.get(`${API_URL}/api/products?type=personalizado`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
   },
 
   async createProduct(productData) {
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const token = user?.access_token;
-      const response = await axios.post(`${API_URL}/api/products`, productData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error al crear producto:", error);
-      throw error;
-    }
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.post(`${API_URL}/api/products`, productData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
   },
 
   async analyzeCustom({ image, height, width, color, quantity }) {
@@ -123,21 +82,20 @@ const AuthService = {
     formData.append("color", color);
     formData.append("quantity", quantity);
 
-    return await axios.post(`${API_URL}/api/analyze`, formData, {
+    const response = await axios.post(`${API_URL}/api/analyze`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data"
       }
     });
+    return response.data;
   },
 
   getQuotes: async () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.access_token;
     const response = await axios.get(`${API_URL}/api/quotes`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
   },
@@ -145,10 +103,8 @@ const AuthService = {
   getPendingQuotes: async () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.access_token;
-    const response = await axios.get("http://localhost:8123/api/presupuestos", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
+    const response = await axios.get(`${API_URL}/api/presupuestos`, {
+      headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
   },
@@ -156,30 +112,108 @@ const AuthService = {
   getQuoteById: async (id) => {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.access_token;
-    const response = await fetch(`http://localhost:8123/api/quotes/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
+    const response = await axios.get(`${API_URL}/api/quotes/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
     });
-    if (!response.ok) throw new Error("No autorizado");
-    return await response.json();
+    return response.data;
   },
 
   updateQuote: async (id, data) => {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.access_token;
-    const response = await fetch(`http://localhost:8123/api/quotes/${id}`, {
-      method: "PUT",
+    const response = await axios.put(`${API_URL}/api/quotes/${id}`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  isLoggedIn: async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    if (!token) return false;
+    try {
+      const response = await axios.get(`${API_URL}/api/user`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.status !== 200) {
+        localStorage.removeItem("user");
+        return false;
+      }
+      return true;
+    } catch {
+      localStorage.removeItem("user");
+      return false;
+    }
+  },
+
+  // --- Carrito ---
+  getCartItems: async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.get(`${API_URL}/api/cart`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  addToCart: async (productId, quantity = 1, price_unit) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await fetch("http://localhost:8123/api/cart/items", {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify({
+        product_id: productId,
+        quantity,
+        price_unit
+      })
     });
     if (!response.ok) throw new Error("No autorizado");
     return await response.json();
   },
+
+  updateCartItem: async (productId, quantity) => {
+    // En tu backend, el endpoint POST /cart/items actualiza si ya existe
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.post(`${API_URL}/api/cart/items`, {
+      product_id: productId,
+      quantity
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  removeCartItem: async (productId) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.delete(`${API_URL}/api/cart/items/${productId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  clearCart: async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.delete(`${API_URL}/api/cart`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  checkout: async (data) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.post(`${API_URL}/api/checkout`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  }
 };
 
 export default AuthService;

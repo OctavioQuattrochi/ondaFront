@@ -18,6 +18,7 @@ import StockMateria from './Components/Admin/StockMateriaPrima';
 import StockProductos from './Components/Admin/StockProductos';
 import Presupuestos from './Components/SuperAdmin/Presupuestos';
 import PresupuestoDetalle from './Components/SuperAdmin/PresupuestoDetalle';
+import ProductDetail from './Components/ProductDetail';
 
 
 function App() {
@@ -39,11 +40,12 @@ function App() {
             <Route path="/mis-compras" element={<MisCompras />} />
             <Route path="/mis-presupuestos" element={<MisPresupuestos />} />
             <Route path="/produccion" element={<Produccion />} />
-           <Route path="/stok-materia" element={<StockMateria />} />
-          <Route path="/stock-productos" element={<StockProductos />} />
-          <Route path="/presupuestos" element={<Presupuestos />} />
-          <Route path="/detalle-presupuesto" element={<PresupuestoDetalle />} />
-          <Route path="/detalle-presupuesto/:id" element={<PresupuestoDetalle />} />
+            <Route path="/stok-materia" element={<StockMateria />} />
+            <Route path="/stock-productos" element={<StockProductos />} />
+            <Route path="/presupuestos" element={<Presupuestos />} />
+            <Route path="/detalle-presupuesto" element={<PresupuestoDetalle />} />
+            <Route path="/detalle-presupuesto/:id" element={<PresupuestoDetalle />} />
+            <Route path="/producto/:id" element={<ProductDetail />} />
 
           </Routes>
         </main>
