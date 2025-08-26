@@ -4,14 +4,25 @@ import '../../Styles/SuperAdmin/Presupuestos.css';
 import { useNavigate } from 'react-router-dom';
 import AuthService from "../../Service/AuthService";
 
+const ESTADOS = {
+  pendiente: "Pendiente de revisión",
+  esperando_confirmacion: "Esperando confirmación del cliente",
+  pendiente_pago: "Pendiente de pago",
+  pagado: "Pagado",
+  en_produccion: "En producción",
+  listo_para_entregar: "Listo para entregar",
+  entregado: "Entregado"
+};
+
 const Presupuestos = () => {
   const [presupuestos, setPresupuestos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState(""); // Nuevo estado para el filtro
   const navigate = useNavigate();
 
   useEffect(() => {
-    AuthService.getPendingQuotes()
+    AuthService.getAllQuotes()
       .then(data => {
         setPresupuestos(Array.isArray(data) ? data : []);
         setError("");
@@ -20,11 +31,31 @@ const Presupuestos = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  // Filtra los presupuestos según el estado seleccionado
+  const presupuestosFiltrados = filtroEstado
+    ? presupuestos.filter(p => p.status === filtroEstado)
+    : presupuestos;
+
   return (
     <div style={{ display: 'flex' }}>
       <Sidebar />
       <div className="presupuestos-container">
-        <h2 className="titulo">Presupuestos a confirmar</h2>
+        <h2 className="titulo">Presupuestos</h2>
+        <div style={{ marginBottom: 16 }}>
+          <label>
+            <b>Filtrar por estado: </b>
+            <select
+              value={filtroEstado}
+              onChange={e => setFiltroEstado(e.target.value)}
+              style={{ marginLeft: 8, padding: 4, borderRadius: 4 }}
+            >
+              <option value="">Todos</option>
+              {Object.entries(ESTADOS).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+            </select>
+          </label>
+        </div>
         <div className="tabla-container">
           <table className="tabla">
             <thead>
@@ -33,23 +64,25 @@ const Presupuestos = () => {
                 <th>Costo</th>
                 <th>Ganancia</th>
                 <th>Precio propuesto</th>
+                <th>Estado</th>
                 <th>Detalle</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={5}>Cargando...</td></tr>
+                <tr><td colSpan={6}>Cargando...</td></tr>
               ) : error ? (
-                <tr><td colSpan={5} style={{ color: "red" }}>{error}</td></tr>
-              ) : presupuestos.length === 0 ? (
-                <tr><td colSpan={5}>No hay presupuestos pendientes.</td></tr>
+                <tr><td colSpan={6} style={{ color: "red" }}>{error}</td></tr>
+              ) : presupuestosFiltrados.length === 0 ? (
+                <tr><td colSpan={6}>No hay presupuestos para mostrar.</td></tr>
               ) : (
-                presupuestos.map((fila) => (
+                presupuestosFiltrados.map((fila) => (
                   <tr key={fila.id}>
                     <td>{fila.user?.name || fila.user_id}</td>
                     <td>${fila.cost || "--"}</td>
                     <td>${fila.profit || "--"}</td>
                     <td>${fila.estimated_price || "--"}</td>
+                    <td>{ESTADOS[fila.status] || fila.status || "--"}</td>
                     <td>
                       <button
                         className="ver-detalle-btn"

@@ -3,13 +3,15 @@ import { TextField, Button, Typography, Container, Paper } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../Styles/Login/login.css';
 import AuthService from '../../Service/AuthService';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({ email: '', password: '' });
 
-  const navigate = useNavigate(); // Hook de navegación
+  const navigate = useNavigate();
+  const { setIsLogged } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -32,6 +34,7 @@ export default function Login() {
     if (valid) {
       try {
         await AuthService.login(email, password);
+        setIsLogged(true); // <-- Actualiza el contexto de autenticación
         navigate("/mis-compras");
       } catch (err) {
         setErrors({ ...newErrors, password: 'Credenciales incorrectas.' });

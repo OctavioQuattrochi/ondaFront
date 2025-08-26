@@ -100,6 +100,18 @@ const AuthService = {
     return response.data;
   },
 
+  getAllQuotes: async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await fetch("http://localhost:8123/api/quotes", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+    return await response.json();
+  },
+
   getPendingQuotes: async () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.access_token;
@@ -144,6 +156,21 @@ const AuthService = {
       localStorage.removeItem("user");
       return false;
     }
+  },
+
+  logout: async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    if (token) {
+      try {
+        await axios.post(`${API_URL}/api/logout`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } catch (e) {
+        // Si hay error igual limpiamos el localStorage
+      }
+    }
+    localStorage.removeItem("user");
   },
 
   // --- Carrito ---

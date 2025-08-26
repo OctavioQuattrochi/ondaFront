@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "../Shared/Sidebar";
 import "../../Styles/Client/MisCompras.css";
 import AuthService from "../../Service/AuthService";
 
@@ -26,49 +25,46 @@ export default function MisPresupuestos() {
   }, []);
 
   return (
-    <div className="mis-compras-layout">
-      <Sidebar />
-      <div className="mis-compras-container">
-        <h2 className="titulo-compras">Mis presupuestos</h2>
-        <div className="tabla-contenedor">
-          <table className="tabla-compras">
-            <thead>
+    <div className="mis-compras-container">
+      <h2 className="titulo-compras">Mis presupuestos</h2>
+      <div className="tabla-contenedor">
+        <table className="tabla-compras">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Detalle</th>
+              <th>Precio</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
               <tr>
-                <th>ID</th>
-                <th>Detalle</th>
-                <th>Precio</th>
-                <th>Estado</th>
+                <td colSpan={4}>Cargando...</td>
               </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={4}>Cargando...</td>
+            ) : Array.isArray(presupuestos) && presupuestos.length === 0 ? (
+              <tr>
+                <td colSpan={4}>No tienes presupuestos aún.</td>
+              </tr>
+            ) : (
+              Array.isArray(presupuestos) &&
+              presupuestos.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.id}</td>
+                  <td>
+                    {item.color} - {item.height_cm}x{item.width_cm}cm
+                  </td>
+                  <td>
+                    {item.estimated_price
+                      ? `$${Number(item.estimated_price).toLocaleString("es-AR")}`
+                      : "$------"}
+                  </td>
+                  <td className="pendiente">Pendiente</td>
                 </tr>
-              ) : Array.isArray(presupuestos) && presupuestos.length === 0 ? (
-                <tr>
-                  <td colSpan={4}>No tienes presupuestos aún.</td>
-                </tr>
-              ) : (
-                Array.isArray(presupuestos) &&
-                presupuestos.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.id}</td>
-                    <td>
-                      {item.color} - {item.height_cm}x{item.width_cm}cm
-                    </td>
-                    <td>
-                      {item.estimated_price
-                        ? `$${Number(item.estimated_price).toLocaleString("es-AR")}`
-                        : "$------"}
-                    </td>
-                    <td className="pendiente">Pendiente</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

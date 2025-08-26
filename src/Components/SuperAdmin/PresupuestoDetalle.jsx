@@ -4,6 +4,17 @@ import '../../Styles/SuperAdmin/PresupuestoDetalle.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import AuthService from "../../Service/AuthService";
 
+// Array de estados sincronizado con el backend
+const ESTADOS = [
+  { value: "pendiente", label: "Pendiente de revisión" },
+  { value: "esperando_confirmacion", label: "Esperando confirmación del cliente" },
+  { value: "pendiente_pago", label: "Pendiente de pago" },
+  { value: "pagado", label: "Pagado" },
+  { value: "en_produccion", label: "En producción" },
+  { value: "listo_para_entregar", label: "Listo para entregar" },
+  { value: "entregado", label: "Entregado" }
+];
+
 const PresupuestoDetalle = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -69,9 +80,9 @@ const PresupuestoDetalle = () => {
             <label>
               <strong>Estado:</strong>
               <select value={estado} onChange={e => setEstado(e.target.value)}>
-                <option value="pendiente">Pendiente</option>
-                <option value="aceptado">Aceptar</option>
-                <option value="rechazado">Rechazar</option>
+                {ESTADOS.map(e => (
+                  <option key={e.value} value={e.value}>{e.label}</option>
+                ))}
               </select>
             </label>
 

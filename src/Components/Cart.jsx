@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthService from "../Service/AuthService";
 import "../Styles/cart.css";
+
+// Usa la misma lógica que en la tienda para mostrar imágenes locales
+const getLocalProductImage = (imageName) => {
+  if (!imageName) return "";
+  return `/src/sources/store/${imageName}`;
+};
 
 const Cart = () => {
   const [items, setItems] = useState([]);
@@ -9,22 +16,24 @@ const Cart = () => {
   const [total, setTotal] = useState(0);
   const [payment, setPayment] = useState("transfer");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Trae los items del carrito del backend
     AuthService.getCartItems()
       .then(data => {
-        setItems(Array.isArray(data) ? data : []);
+        setItems(Array.isArray(data.items) ? data.items : []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
 
   useEffect(() => {
-    // Calcula subtotal y total
-    const sub = items.reduce((acc, item) => acc + (parseFloat(item.final_price) || 0) * item.quantity, 0);
+    const sub = items.reduce(
+      (acc, item) => acc + (parseFloat(item.product?.final_price || 0) * item.quantity),
+      0
+    );
     setSubtotal(sub);
-    setTotal(sub); // Aplica descuentos aquí si tienes
+    setTotal(sub);
   }, [items]);
 
   const handleQuantityChange = async (id, qty) => {
@@ -32,7 +41,6 @@ const Cart = () => {
     setItems(items.map(item =>
       item.id === id ? { ...item, quantity: qty } : item
     ));
-    // Actualiza en backend
     await AuthService.updateCartItem(id, qty);
   };
 
@@ -42,14 +50,29 @@ const Cart = () => {
   };
 
   const handleApplyPromo = () => {
-    // Lógica para aplicar promoción (mock)
     alert("Código aplicado (mock)");
   };
 
   const handleCheckout = async () => {
-    // Lógica para finalizar compra (mock)
-    await AuthService.checkout({ payment_method: payment, promo });
-    alert("Compra finalizada (mock)");
+    try {
+      const cartItems = items.map(item => ({
+        product_id: item.product?.id,
+        quantity: item.quantity
+      }));
+      const response = await AuthService.checkout({
+        payment_method: payment,
+        promo,
+        items: cartItems
+      });
+      navigate("/cart-success", {
+        state: {
+          orderNumber: response.order_number,
+          total: response.total
+        }
+      });
+    } catch {
+      alert("No se pudo finalizar la compra");
+    }
   };
 
   if (loading) return <div className="cart-loading">Cargando...</div>;
@@ -64,26 +87,40 @@ const Cart = () => {
           <div>Cantidad</div>
           <div>Subtotal</div>
         </div>
-        {items.map(item => (
-          <div className="cart-table-row" key={item.id}>
-            <div className="cart-product">
-              <img src={item.image_url} alt={item.name} className="cart-product-img" />
-              <span>{item.name}</span>
-            </div>
-            <div>${item.final_price}</div>
-            <div>
-              <input
-                type="number"
-                min="1"
-                value={item.quantity}
-                onChange={e => handleQuantityChange(item.id, Number(e.target.value))}
-                className="cart-qty-input"
-              />
-            </div>
-            <div>${(parseFloat(item.final_price) * item.quantity).toLocaleString()}</div>
-            <button className="cart-remove-btn" onClick={() => handleRemove(item.id)}>×</button>
+        {items.length === 0 ? (
+          <div style={{ color: "#fff", padding: "2rem", textAlign: "center" }}>
+            Tu carrito está vacío.
           </div>
-        ))}
+        ) : (
+          items.map(item => (
+            <div className="cart-table-row" key={item.id}>
+              <div className="cart-product">
+                <img
+                  src={
+                    item.product?.image
+                      ? getLocalProductImage(item.product.image)
+                      : ""
+                  }
+                  alt={item.product?.name}
+                  className="cart-product-img"
+                />
+                <span>{item.product?.name}</span>
+              </div>
+              <div>${parseFloat(item.product?.final_price || 0).toFixed(2)}</div>
+              <div>
+                <input
+                  type="number"
+                  min="1"
+                  value={item.quantity}
+                  onChange={e => handleQuantityChange(item.id, Number(e.target.value))}
+                  className="cart-qty-input"
+                />
+              </div>
+              <div>${(parseFloat(item.product?.final_price || 0) * item.quantity).toLocaleString()}</div>
+              <button className="cart-remove-btn" onClick={() => handleRemove(item.id)}>×</button>
+            </div>
+          ))
+        )}
       </div>
 
       <div className="cart-promo-row">

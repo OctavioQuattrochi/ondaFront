@@ -44,8 +44,9 @@ const Customs = () => {
         quantity,
         note
       });
+      console.log("Respuesta del backend:", response);
       // Solo mostramos el presupuesto final, con formato de moneda si es válido
-      const price = response.data.estimated_price;
+      const price = response.estimated_price;
       if (price && !isNaN(Number(price))) {
         setMensaje(`Presupuesto estimado: $${Number(price).toLocaleString('es-AR')}`);
       } else {
