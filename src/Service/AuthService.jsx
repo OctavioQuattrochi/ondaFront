@@ -3,12 +3,23 @@ import axios from "axios";
 const API_URL = "http://localhost:8123";
 
 const AuthService = {
+  // Cambiado: login ahora guarda el usuario completo (token + datos)
   async login(email, password) {
+    // 1. Login y obtener token
     const response = await axios.post(`${API_URL}/api/login`, { email, password });
-    if (response.data.access_token) {
-      localStorage.setItem("user", JSON.stringify(response.data));
-    }
-    return response.data;
+    if (!response.data.access_token) throw new Error("Login failed");
+    const token = response.data.access_token;
+
+    // 2. Obtener datos del usuario
+    const meResp = await axios.get(`${API_URL}/api/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const userData = meResp.data;
+
+    // 3. Guardar todo en localStorage
+    localStorage.setItem("user", JSON.stringify({ access_token: token, ...userData }));
+
+    return { access_token: token, ...userData };
   },
 
   async register(name, email, password, lastname, password_confirmation) {
@@ -240,7 +251,40 @@ const AuthService = {
       headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
-  }
+  },
+
+  getUsers: async (filters = {}) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const params = new URLSearchParams(filters).toString();
+    const response = await fetch(`http://localhost:8123/api/users${params ? "?" + params : ""}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return await response.json();
+  },
+
+  getUserById: async (id) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await fetch(`http://localhost:8123/api/users/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return await response.json();
+  },
+
+  updateUserRole: async (id, role) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await fetch(`http://localhost:8123/api/users/${id}/role`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ role })
+    });
+    return await response.json();
+  },
 };
 
 export default AuthService;

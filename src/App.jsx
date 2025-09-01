@@ -24,6 +24,7 @@ import CartSuccess from './Components/CartSuccess';
 import PrivateLayout from './Components/Shared/PrivateLayout';
 import Sidebar from './Components/Shared/Sidebar';
 import Profile from './Components/Login/profile';
+import Usuarios from './Components/SuperAdmin/Usuarios';
 
 function App() {
   return (
@@ -103,6 +104,14 @@ function App() {
               element={
                 <PrivateLayout>
                   <PresupuestoDetalle />
+                </PrivateLayout>
+              }
+            />
+             <Route
+              path="/usuarios"
+              element={
+                <PrivateLayout>
+                  <Usuarios />
                 </PrivateLayout>
               }
             />

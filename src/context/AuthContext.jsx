@@ -1,21 +1,30 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import AuthService from "../Service/AuthService";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [isLogged, setIsLogged] = useState(!!localStorage.getItem("user"));
+  // Inicializa isLogged según si hay un usuario en localStorage
+  const [isLogged, setIsLogged] = useState(() => {
+    const user = localStorage.getItem("user");
+    return !!user;
+  });
 
+  // Si cambia el usuario en localStorage, actualiza isLogged
   useEffect(() => {
-    // Chequea el login al montar
-    AuthService.isLoggedIn().then(setIsLogged);
-
-    // Escucha cambios en localStorage (por ejemplo, desde otras pestañas)
-    const onStorage = () => {
-      setIsLogged(!!localStorage.getItem("user"));
+    const checkUser = () => {
+      const user = localStorage.getItem("user");
+      setIsLogged(!!user);
     };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+
+    // Escucha cambios manuales en localStorage (por ejemplo, logout en otra pestaña)
+    window.addEventListener("storage", checkUser);
+
+    // Chequea al montar el componente
+    checkUser();
+
+    return () => {
+      window.removeEventListener("storage", checkUser);
+    };
   }, []);
 
   return (

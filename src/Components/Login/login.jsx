@@ -34,8 +34,11 @@ export default function Login() {
     if (valid) {
       try {
         await AuthService.login(email, password);
-        setIsLogged(true); // <-- Actualiza el contexto de autenticación
-        navigate("/mis-compras");
+        setIsLogged(true); // Asegura que el contexto se actualice
+        // Forzar recarga para que Sidebar y Header reflejen el login
+        window.location.reload();
+        // O si prefieres navegación sin recarga, solo usa navigate:
+        // navigate("/mis-compras");
       } catch (err) {
         setErrors({ ...newErrors, password: 'Credenciales incorrectas.' });
       }

@@ -4,7 +4,8 @@ import {
   PackageOpen,
   Package,
   Hammer,
-  FileText
+  FileText,
+  Users
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import "../../Styles/Shared/Sidebar.css";
@@ -17,7 +18,6 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Botón flotante para abrir el sidebar SOLO si está cerrado */}
       {!open && (
         <button
           className="sidebar-toggle-btn"
@@ -27,9 +27,7 @@ export default function Sidebar() {
           ☰
         </button>
       )}
-      {/* Sidebar desplegable */}
       <div className={`sidebar ${open ? "open" : ""}`}>
-        {/* Botón para cerrar el sidebar */}
         <button
           className="sidebar-close-btn"
           onClick={() => setOpen(false)}
@@ -99,9 +97,19 @@ export default function Sidebar() {
               Presupuesto a Confirmar
             </NavLink>
           </li>
+          {/* El ítem Usuarios SIEMPRE visible para usuarios logueados */}
+          <li>
+            <NavLink
+              to="/usuarios"
+              className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+              onClick={() => setOpen(false)}
+            >
+              <Users size={18} style={{ marginRight: "8px" }} />
+              Usuarios
+            </NavLink>
+          </li>
         </ul>
       </div>
-      {/* Fondo oscuro al abrir */}
       {open && (
         <div
           className="sidebar-backdrop"

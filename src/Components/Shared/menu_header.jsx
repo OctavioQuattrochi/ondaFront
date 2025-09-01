@@ -22,9 +22,12 @@ function Header() {
           {!isLogged ? (
             <li><Link to="/login">Iniciar sesión</Link></li>
           ) : (
+            <>
             <li><Link to="/perfil">Perfil</Link></li>
+            <li><Link to="/cart">🛒 Ver carrito</Link></li>
+            </>
           )}
-          <li><Link to="/cart">🛒 Ver carrito</Link></li>
+          
         </ul>
       </nav>
     </header>
