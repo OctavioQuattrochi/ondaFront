@@ -34,11 +34,8 @@ export default function Login() {
     if (valid) {
       try {
         await AuthService.login(email, password);
-        setIsLogged(true); // Asegura que el contexto se actualice
-        // Forzar recarga para que Sidebar y Header reflejen el login
-        window.location.reload();
-        // O si prefieres navegación sin recarga, solo usa navigate:
-        // navigate("/mis-compras");
+        setIsLogged(true); // Actualiza el contexto de autenticación
+        navigate("/"); // Redirige al home o a la ruta que prefieras
       } catch (err) {
         setErrors({ ...newErrors, password: 'Credenciales incorrectas.' });
       }
@@ -96,6 +93,12 @@ export default function Login() {
           <Typography variant="body2" align="center" className="create-account-link">
             <Link to="/register" className="link">
               Crear cuenta
+            </Link>
+          </Typography>
+
+          <Typography variant="body2" align="right" className="forgot-password-link" style={{ marginTop: 8 }}>
+            <Link to="/recuperar-clave" className="link">
+              ¿Olvidaste tu contraseña?
             </Link>
           </Typography>
         </form>

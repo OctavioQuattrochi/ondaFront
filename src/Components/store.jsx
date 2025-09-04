@@ -69,7 +69,7 @@ const Store = () => {
                 alt={prod.name}
               />
               <div className="product-name">{prod.name}</div>
-              <div className="product-price">${prod.price}</div>
+              <div className="product-price">${prod.final_price}</div>
             </div>
           ))}
         </div>

@@ -3,20 +3,17 @@ import axios from "axios";
 const API_URL = "http://localhost:8123";
 
 const AuthService = {
-  // Cambiado: login ahora guarda el usuario completo (token + datos)
+  // Login: guarda el usuario completo (token + datos)
   async login(email, password) {
-    // 1. Login y obtener token
     const response = await axios.post(`${API_URL}/api/login`, { email, password });
     if (!response.data.access_token) throw new Error("Login failed");
     const token = response.data.access_token;
 
-    // 2. Obtener datos del usuario
-    const meResp = await axios.get(`${API_URL}/api/me`, {
+    const meResp = await axios.get(`${API_URL}/api/user`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const userData = meResp.data;
 
-    // 3. Guardar todo en localStorage
     localStorage.setItem("user", JSON.stringify({ access_token: token, ...userData }));
 
     return { access_token: token, ...userData };
@@ -214,7 +211,6 @@ const AuthService = {
   },
 
   updateCartItem: async (productId, quantity) => {
-    // En tu backend, el endpoint POST /cart/items actualiza si ya existe
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.access_token;
     const response = await axios.post(`${API_URL}/api/cart/items`, {
@@ -257,33 +253,97 @@ const AuthService = {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.access_token;
     const params = new URLSearchParams(filters).toString();
-    const response = await fetch(`http://localhost:8123/api/users${params ? "?" + params : ""}`, {
+    const response = await axios.get(`${API_URL}/api/users${params ? "?" + params : ""}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    return await response.json();
+    return response.data;
   },
 
   getUserById: async (id) => {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.access_token;
-    const response = await fetch(`http://localhost:8123/api/users/${id}`, {
+    const response = await axios.get(`${API_URL}/api/users/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    return await response.json();
+    return response.data;
   },
 
   updateUserRole: async (id, role) => {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.access_token;
-    const response = await fetch(`http://localhost:8123/api/users/${id}/role`, {
-      method: "PUT",
+    const response = await axios.put(`${API_URL}/api/users/${id}/role`, { role }, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ role })
+      }
     });
-    return await response.json();
+    return response.data;
+  },
+
+  getVentas: async (filtros = {}) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const params = new URLSearchParams(filtros).toString();
+    const response = await axios.get(`${API_URL}/api/ventas${params ? "?" + params : ""}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  updateUserProfile: async (data) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.put(`${API_URL}/api/user`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  recuperarClave: async (email) => {
+    await axios.post(`${API_URL}/api/password/email`, { email });
+  },
+
+  resetPassword: async (data) => {
+    await axios.post(`${API_URL}/api/password/reset`, data);
+  },
+
+  // --- Producción ---
+  getProductionBatches: async (status = "Pendiente,En produccion") => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.get(`${API_URL}/api/produccion`, {
+      params: { status },
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  createProductionBatch: async (data) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.post(`${API_URL}/api/produccion`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  updateProductionBatch: async (id, data) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.put(`${API_URL}/api/produccion/${id}`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  // --- Stock ---
+  getStock: async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.get(`${API_URL}/api/stock`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
   },
 };
 

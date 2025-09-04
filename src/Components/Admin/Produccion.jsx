@@ -3,75 +3,132 @@ import Sidebar from '../Shared/Sidebar';
 import '../../Styles/Admin/Produccion.css';
 import AuthService from "../../Service/AuthService";
 
-const ESTADOS = ["Pendiente", "En producción", "Finalizado"];
+const ESTADOS = ["Pendiente", "En produccion", "Finalizado"];
+const ESTADOS_PERSONALIZADO = ["Pagado", "En produccion", "Finalizado"];
 
 const Produccion = () => {
+  const [lotes, setLotes] = useState([]);
   const [productos, setProductos] = useState([]);
-  const [materiales, setMateriales] = useState([]);
   const [personalizados, setPersonalizados] = useState([]);
   const [estadoFilter, setEstadoFilter] = useState("");
   const [productoFilter, setProductoFilter] = useState("");
   const [error, setError] = useState("");
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedLote, setSelectedLote] = useState(null);
 
-  // Estados para agregar producto
-  const [nuevoNombre, setNuevoNombre] = useState("");
+  // Estados para agregar lote
+  const [nuevoProductoId, setNuevoProductoId] = useState("");
+  const [nuevoColor, setNuevoColor] = useState("");
   const [nuevaCantidad, setNuevaCantidad] = useState(1);
   const [nuevoEstado, setNuevoEstado] = useState(ESTADOS[0]);
   const [loading, setLoading] = useState(false);
 
+  // Cargar productos de la tienda para el select
   useEffect(() => {
-    AuthService.getProducts()
-      .then(data => {
-        setProductos(data.filter(p => p.type === "product"));
-        setPersonalizados(data.filter(p => p.type === "personalizado"));
-      })
-      .catch(() => setError("No se pudieron cargar los productos."));
-    AuthService.getRawMaterials()
-      .then(data => setMateriales(data))
-      .catch(() => setError("No se pudieron cargar las materias primas."));
+    AuthService.getPredefinedProducts()
+      .then(data => setProductos(data))
+      .catch(() => setError("No se pudieron cargar los productos de la tienda."));
   }, []);
 
-  // Unifica todos los items en un solo array para mostrar en la tabla
-  const allItems = [
-    ...productos.map(p => ({ ...p, tipo: "Producto" })),
-    ...materiales.map(m => ({ ...m, tipo: "Materia Prima" })),
-    ...personalizados.map(p => ({ ...p, tipo: "Personalizado" })),
-  ];
+  // Cargar lotes de producción
+  const cargarLotes = () => {
+    setLoading(true);
+    AuthService.getProductionBatches()
+      .then(data => setLotes(data))
+      .catch(() => setError("No se pudieron cargar los lotes de producción."))
+      .finally(() => setLoading(false));
+  };
 
-  // Filtrado por estado y nombre de producto
-  const filteredItems = allItems.filter(item => {
-    const matchEstado = estadoFilter ? (item.status || "Pendiente") === estadoFilter : true;
+  // Cargar personalizados (presupuestos pagados)
+  const cargarPersonalizados = () => {
+    AuthService.getAllQuotes()
+      .then(data => {
+        // Solo presupuestos pagados
+        const pagados = (Array.isArray(data) ? data : []).filter(p => p.status === "pagado" || p.status === "en_produccion");
+        setPersonalizados(pagados);
+      })
+      .catch(() => setError("No se pudieron cargar los personalizados."));
+  };
+
+  useEffect(() => {
+    cargarLotes();
+    cargarPersonalizados();
+    // eslint-disable-next-line
+  }, []);
+
+  // Filtrado por estado y producto
+  const filteredLotes = lotes.filter(lote => {
+    const matchEstado = estadoFilter ? lote.status === estadoFilter : true;
+    const prod = productos.find(p => p.id === lote.product_id);
     const matchProducto = productoFilter
-      ? (item.name || item.material || "").toLowerCase().includes(productoFilter.toLowerCase())
+      ? (prod?.name || "").toLowerCase().includes(productoFilter.toLowerCase())
       : true;
     return matchEstado && matchProducto;
   });
 
-  // Handler para agregar producto
+  const filteredPersonalizados = personalizados.filter(p => {
+    const matchEstado = estadoFilter ? (p.status === estadoFilter || p.status === "en_produccion") : true;
+    const matchProducto = productoFilter
+      ? (p.product_name || p.detalle || "").toLowerCase().includes(productoFilter.toLowerCase())
+      : true;
+    return matchEstado && matchProducto;
+  });
+
+  // Handler para agregar lote
   const handleAgregar = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     try {
-      // Ajusta los campos según tu backend
-      const nuevoProducto = {
-        type: "product",
-        name: nuevoNombre,
+      const data = {
+        product_id: nuevoProductoId,
+        color: nuevoColor,
         quantity: nuevaCantidad,
-        status: nuevoEstado,
-        color: "Sin color", // Ajusta si tienes un input para color
-        location: "Sin ubicación" // Ajusta si tienes un input para ubicación
+        status: nuevoEstado
       };
-      const response = await AuthService.createProduct(nuevoProducto);
-      // Agrega el producto a la lista local
-      setProductos(prev => [...prev, response.product]);
-      // Limpia los campos
-      setNuevoNombre("");
+      await AuthService.createProductionBatch(data);
+      cargarLotes();
+      // Limpiar campos
+      setNuevoProductoId("");
+      setNuevoColor("");
       setNuevaCantidad(1);
       setNuevoEstado(ESTADOS[0]);
     } catch (err) {
-      setError("No se pudo crear el producto.");
+      setError("No se pudo crear el lote.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handler para actualizar lote (cambiar estado o cantidad)
+  const handleActualizar = async (lote) => {
+    setLoading(true);
+    setError("");
+    try {
+      await AuthService.updateProductionBatch(lote.id, {
+        status: lote.status,
+        quantity: lote.quantity
+      });
+      cargarLotes();
+      setSelectedLote(null);
+    } catch {
+      setError("No se pudo actualizar el lote.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handler para actualizar personalizado (cambiar estado)
+  const handleActualizarPersonalizado = async (presupuesto) => {
+    setLoading(true);
+    setError("");
+    try {
+      await AuthService.updateQuote(presupuesto.id, {
+        status: presupuesto.status
+      });
+      cargarPersonalizados();
+      setSelectedLote(null);
+    } catch {
+      setError("No se pudo actualizar el personalizado.");
     } finally {
       setLoading(false);
     }
@@ -115,12 +172,12 @@ const Produccion = () => {
             <thead>
               <tr>
                 <th>Tipo</th>
-                <th>Producto / Material</th>
-                <th>Descripción</th>
+                <th>Producto</th>
+                <th>Color/Detalle</th>
                 <th>Estado</th>
                 <th>Cantidad</th>
                 <th>Fecha estado</th>
-                <th>Ubicación</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -129,38 +186,170 @@ const Produccion = () => {
                   <td colSpan={7} style={{ color: "red" }}>{error}</td>
                 </tr>
               )}
-              {filteredItems.length === 0 && !error && (
+              {filteredLotes.length === 0 && filteredPersonalizados.length === 0 && !error && (
                 <tr>
                   <td colSpan={7}>No hay registros.</td>
                 </tr>
               )}
-              {filteredItems.map((item, idx) => (
-                <tr
-                  key={item.id || idx}
-                  onClick={() => setSelectedItem(item)}
-                  style={{ cursor: "pointer", background: selectedItem?.id === item.id ? "#eef" : undefined }}
-                >
-                  <td>{item.tipo}</td>
-                  <td>{item.name || item.material || "--"}</td>
-                  <td>{item.description || "--"}</td>
-                  <td>{item.status || "Pendiente"}</td>
-                  <td>{item.quantity || "--"}</td>
-                  <td>{item.updated_at ? new Date(item.updated_at).toLocaleDateString() : "--"}</td>
-                  <td>{item.location || "--"}</td>
-                </tr>
-              ))}
+              {/* Lotes de producción */}
+              {filteredLotes.map((lote, idx) => {
+                const prod = productos.find(p => p.id === lote.product_id);
+                const isEditing = selectedLote?.id === lote.id && selectedLote?.tipo === "Producto";
+                return (
+                  <tr
+                    key={`lote-${lote.id || idx}`}
+                    style={{ background: isEditing ? "#eef" : undefined }}
+                  >
+                    <td>Producto</td>
+                    <td>{prod?.name || "--"}</td>
+                    <td>{lote.color || "--"}</td>
+                    <td>
+                      {isEditing ? (
+                        <select
+                          value={selectedLote.status}
+                          onChange={e =>
+                            setSelectedLote({ ...selectedLote, status: e.target.value, tipo: "Producto" })
+                          }
+                        >
+                          {ESTADOS.map((estado, i) => (
+                            <option key={i} value={estado}>{estado}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        lote.status
+                      )}
+                    </td>
+                    <td>
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          min={1}
+                          value={selectedLote.quantity}
+                          onChange={e =>
+                            setSelectedLote({ ...selectedLote, quantity: Number(e.target.value), tipo: "Producto" })
+                          }
+                          style={{ width: 60 }}
+                        />
+                      ) : (
+                        lote.quantity
+                      )}
+                    </td>
+                    <td>{lote.updated_at ? new Date(lote.updated_at).toLocaleDateString() : "--"}</td>
+                    <td>
+                      {isEditing ? (
+                        <>
+                          <button
+                            className="btn aceptar"
+                            onClick={() => handleActualizar(selectedLote)}
+                            disabled={loading}
+                          >
+                            Guardar
+                          </button>
+                          <button
+                            className="btn cancelar"
+                            onClick={() => setSelectedLote(null)}
+                            disabled={loading}
+                          >
+                            Cancelar
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          className="btn editar"
+                          onClick={() => setSelectedLote({ ...lote, tipo: "Producto" })}
+                        >
+                          Editar
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+              {/* Personalizados (presupuestos pagados/en produccion) */}
+              {filteredPersonalizados.map((p, idx) => {
+                const isEditing = selectedLote?.id === p.id && selectedLote?.tipo === "Personalizado";
+                return (
+                  <tr
+                    key={`perso-${p.id || idx}`}
+                    style={{ background: isEditing ? "#eef" : undefined }}
+                  >
+                    <td>Personalizado</td>
+                    <td>{p.product_name || "--"}</td>
+                    <td>{p.detalle || "--"}</td>
+                    <td>
+                      {isEditing ? (
+                        <select
+                          value={selectedLote.status}
+                          onChange={e =>
+                            setSelectedLote({ ...selectedLote, status: e.target.value, tipo: "Personalizado" })
+                          }
+                        >
+                          {ESTADOS_PERSONALIZADO.map((estado, i) => (
+                            <option key={i} value={estado}>{estado}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        p.status
+                      )}
+                    </td>
+                    <td>{p.quantity || "--"}</td>
+                    <td>{p.updated_at ? new Date(p.updated_at).toLocaleDateString() : "--"}</td>
+                    <td>
+                      {isEditing ? (
+                        <>
+                          <button
+                            className="btn aceptar"
+                            onClick={() => handleActualizarPersonalizado(selectedLote)}
+                            disabled={loading}
+                          >
+                            Guardar
+                          </button>
+                          <button
+                            className="btn cancelar"
+                            onClick={() => setSelectedLote(null)}
+                            disabled={loading}
+                          >
+                            Cancelar
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          className="btn editar"
+                          onClick={() => setSelectedLote({ ...p, tipo: "Personalizado" })}
+                        >
+                          Editar
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
 
+        {/* Formulario para agregar lote de producción */}
         <form className="formulario-edicion" onSubmit={handleAgregar}>
           <div className="campo">
             <label>Producto:</label>
+            <select
+              value={nuevoProductoId}
+              onChange={e => setNuevoProductoId(e.target.value)}
+              required
+            >
+              <option value="">Seleccionar producto</option>
+              {productos.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="campo">
+            <label>Color:</label>
             <input
               type="text"
-              value={nuevoNombre}
-              onChange={e => setNuevoNombre(e.target.value)}
-              required
+              value={nuevoColor}
+              onChange={e => setNuevoColor(e.target.value)}
+              placeholder="Ej: rojo"
             />
           </div>
           <div className="campo">
@@ -193,7 +382,8 @@ const Produccion = () => {
               className="btn cancelar"
               type="button"
               onClick={() => {
-                setNuevoNombre("");
+                setNuevoProductoId("");
+                setNuevoColor("");
                 setNuevaCantidad(1);
                 setNuevoEstado(ESTADOS[0]);
               }}

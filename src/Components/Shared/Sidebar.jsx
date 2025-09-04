@@ -5,7 +5,8 @@ import {
   Package,
   Hammer,
   FileText,
-  Users
+  Users,
+  DollarSign
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import "../../Styles/Shared/Sidebar.css";
@@ -97,7 +98,6 @@ export default function Sidebar() {
               Presupuesto a Confirmar
             </NavLink>
           </li>
-          {/* El ítem Usuarios SIEMPRE visible para usuarios logueados */}
           <li>
             <NavLink
               to="/usuarios"
@@ -106,6 +106,16 @@ export default function Sidebar() {
             >
               <Users size={18} style={{ marginRight: "8px" }} />
               Usuarios
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/ventas"
+              className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+              onClick={() => setOpen(false)}
+            >
+              <DollarSign size={18} style={{ marginRight: "8px" }} />
+              Ventas
             </NavLink>
           </li>
         </ul>

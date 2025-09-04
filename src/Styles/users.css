@@ -1,0 +1,127 @@
+/* Contenedor principal */
+.presupuestos-container {
+  background: #23232b;
+  color: #fff;
+  border-radius: 16px;
+  padding: 32px 24px;
+  margin: 40px auto;
+  min-width: 700px;
+  max-width: 900px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+}
+
+/* Título */
+.titulo {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #a7a7ff;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+/* Filtros */
+.presupuestos-container > div:first-of-type {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.presupuestos-container input,
+.presupuestos-container select,
+.presupuestos-container button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  outline: none;
+}
+
+.presupuestos-container input,
+.presupuestos-container select {
+  background: #18181f;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+.presupuestos-container button {
+  background: #6c63ff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.presupuestos-container button:hover {
+  background: #554ee0;
+}
+
+/* Tabla */
+.tabla-container {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background: #18181f;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tabla th, .tabla td {
+  padding: 12px 10px;
+  text-align: center;
+}
+
+.tabla th {
+  background: #2d2d3a;
+  color: #a7a7ff;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.tabla tr {
+  border-bottom: 1px solid #333;
+}
+
+.tabla tr:last-child {
+  border-bottom: none;
+}
+
+.tabla td {
+  color: #fff;
+}
+
+.tabla select {
+  background: #23232b;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.tabla select:disabled {
+  background: #444;
+  color: #bbb;
+  cursor: not-allowed;
+}
+
+.tabla td[colspan] {
+  color: #ff6b6b;
+  font-weight: 500;
+  background: #23232b;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .presupuestos-container {
+    min-width: unset;
+    padding: 16px 4px;
+  }
+  .tabla th, .tabla td {
+    padding: 8px 4px;
+    font-size: 0.95rem;
+  }
+}

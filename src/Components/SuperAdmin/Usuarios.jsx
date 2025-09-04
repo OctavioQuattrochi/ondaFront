@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../Shared/Sidebar";
 import AuthService from "../../Service/AuthService";
+import "../../Styles/users.css";
 
-const ROLES = ["superadmin", "admin", "empleado", "cliente"];
+const ROLES = ["superadmin", "admin", "empleado", "usuario"];
 
 export default function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
