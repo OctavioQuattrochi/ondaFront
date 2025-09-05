@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
 import "../../Styles/Client/MisCompras.css";
 import AuthService from "../../Service/AuthService";
+import Paginator from "../Paginator";
 
 export default function MisCompras() {
   const [orders, setOrders] = useState([]);
   const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     AuthService.getOrders()
       .then(data => setOrders(data))
       .catch(() => setError("No se pudieron cargar las compras."));
   }, []);
+
+  const paginatedOrders = orders.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="mis-compras-container">
@@ -31,7 +36,7 @@ export default function MisCompras() {
                 <td colSpan={4}>No hay compras registradas.</td>
               </tr>
             )}
-            {orders.map((order) => (
+            {paginatedOrders.map((order) => (
               <tr key={order.id}>
                 <td>{order.id}</td>
                 <td>
@@ -57,6 +62,12 @@ export default function MisCompras() {
             ))}
           </tbody>
         </table>
+        <Paginator
+          total={orders.length}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
         {error && <div style={{ color: "red" }}>{error}</div>}
       </div>
     </div>

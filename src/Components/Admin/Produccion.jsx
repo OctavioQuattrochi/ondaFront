@@ -2,9 +2,18 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from '../Shared/Sidebar';
 import '../../Styles/Admin/Produccion.css';
 import AuthService from "../../Service/AuthService";
+import Paginator from "../Paginator";
 
 const ESTADOS = ["Pendiente", "En produccion", "Finalizado"];
-const ESTADOS_PERSONALIZADO = ["Pagado", "En produccion", "Finalizado"];
+const ESTADOS_PERSONALIZADO = [
+  { value: "pendiente", label: "Pendiente de revisión" },
+  { value: "esperando_confirmacion", label: "Esperando confirmación del cliente" },
+  { value: "pendiente_pago", label: "Pendiente de pago" },
+  { value: "pagado", label: "Pagado" },
+  { value: "en_produccion", label: "En producción" },
+  { value: "listo_para_entregar", label: "Listo para entregar" },
+  { value: "entregado", label: "Entregado" }
+];
 
 const Produccion = () => {
   const [lotes, setLotes] = useState([]);
@@ -21,6 +30,10 @@ const Produccion = () => {
   const [nuevaCantidad, setNuevaCantidad] = useState(1);
   const [nuevoEstado, setNuevoEstado] = useState(ESTADOS[0]);
   const [loading, setLoading] = useState(false);
+
+  // Paginador
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   // Cargar productos de la tienda para el select
   useEffect(() => {
@@ -42,8 +55,10 @@ const Produccion = () => {
   const cargarPersonalizados = () => {
     AuthService.getAllQuotes()
       .then(data => {
-        // Solo presupuestos pagados
-        const pagados = (Array.isArray(data) ? data : []).filter(p => p.status === "pagado" || p.status === "en_produccion");
+        // Solo presupuestos pagados o en producción
+        const pagados = (Array.isArray(data) ? data : []).filter(
+          p => ["pagado", "en_produccion"].includes(p.status)
+        );
         setPersonalizados(pagados);
       })
       .catch(() => setError("No se pudieron cargar los personalizados."));
@@ -72,6 +87,10 @@ const Produccion = () => {
       : true;
     return matchEstado && matchProducto;
   });
+
+  // Paginado
+  const paginatedLotes = filteredLotes.slice((page - 1) * pageSize, page * pageSize);
+  const paginatedPersonalizados = filteredPersonalizados.slice((page - 1) * pageSize, page * pageSize);
 
   // Handler para agregar lote
   const handleAgregar = async (e) => {
@@ -134,6 +153,10 @@ const Produccion = () => {
     }
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [estadoFilter, productoFilter]);
+
   return (
     <div className="produccion-layout">
       <Sidebar />
@@ -186,19 +209,19 @@ const Produccion = () => {
                   <td colSpan={7} style={{ color: "red" }}>{error}</td>
                 </tr>
               )}
-              {filteredLotes.length === 0 && filteredPersonalizados.length === 0 && !error && (
+              {paginatedLotes.length === 0 && paginatedPersonalizados.length === 0 && !error && (
                 <tr>
                   <td colSpan={7}>No hay registros.</td>
                 </tr>
               )}
               {/* Lotes de producción */}
-              {filteredLotes.map((lote, idx) => {
+              {paginatedLotes.map((lote, idx) => {
                 const prod = productos.find(p => p.id === lote.product_id);
                 const isEditing = selectedLote?.id === lote.id && selectedLote?.tipo === "Producto";
                 return (
                   <tr
                     key={`lote-${lote.id || idx}`}
-                    style={{ background: isEditing ? "#eef" : undefined }}
+                    className={isEditing ? "tr-edicion" : ""}
                   >
                     <td>Producto</td>
                     <td>{prod?.name || "--"}</td>
@@ -228,7 +251,6 @@ const Produccion = () => {
                           onChange={e =>
                             setSelectedLote({ ...selectedLote, quantity: Number(e.target.value), tipo: "Producto" })
                           }
-                          style={{ width: 60 }}
                         />
                       ) : (
                         lote.quantity
@@ -266,12 +288,12 @@ const Produccion = () => {
                 );
               })}
               {/* Personalizados (presupuestos pagados/en produccion) */}
-              {filteredPersonalizados.map((p, idx) => {
+              {paginatedPersonalizados.map((p, idx) => {
                 const isEditing = selectedLote?.id === p.id && selectedLote?.tipo === "Personalizado";
                 return (
                   <tr
                     key={`perso-${p.id || idx}`}
-                    style={{ background: isEditing ? "#eef" : undefined }}
+                    className={isEditing ? "tr-edicion" : ""}
                   >
                     <td>Personalizado</td>
                     <td>{p.product_name || "--"}</td>
@@ -285,11 +307,11 @@ const Produccion = () => {
                           }
                         >
                           {ESTADOS_PERSONALIZADO.map((estado, i) => (
-                            <option key={i} value={estado}>{estado}</option>
+                            <option key={i} value={estado.value}>{estado.label}</option>
                           ))}
                         </select>
                       ) : (
-                        p.status
+                        ESTADOS_PERSONALIZADO.find(e => e.value === p.status)?.label || p.status
                       )}
                     </td>
                     <td>{p.quantity || "--"}</td>
@@ -393,6 +415,12 @@ const Produccion = () => {
             </button>
           </div>
         </form>
+        <Paginator
+          total={filteredLotes.length + filteredPersonalizados.length}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );

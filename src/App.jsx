@@ -26,6 +26,7 @@ import Sidebar from './Components/Shared/Sidebar';
 import Profile from './Components/Login/profile';
 import Usuarios from './Components/SuperAdmin/Usuarios';
 import Ventas from './Components/SuperAdmin/Ventas';
+import Orders from './Components/Orders';
 import RecuperarClave from "./Components/Login/RecuperarClave";
 import ResetPassword from "./Components/Login/ResetPassword";
 
@@ -110,7 +111,7 @@ function App() {
                 </PrivateLayout>
               }
             />
-             <Route
+            <Route
               path="/usuarios"
               element={
                 <PrivateLayout>
@@ -123,6 +124,14 @@ function App() {
             <Route path="/cart-success" element={<CartSuccess />} />
             <Route path="/perfil" element={<Profile />} />
             <Route path="/ventas" element={<Ventas />} />
+            <Route
+              path="/ordenes"
+              element={
+                <PrivateLayout>
+                  <Orders />
+                </PrivateLayout>
+              }
+            />
             <Route path="/recuperar-clave" element={<RecuperarClave />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
           </Routes>

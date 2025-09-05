@@ -6,7 +6,8 @@ import {
   Hammer,
   FileText,
   Users,
-  DollarSign
+  DollarSign,
+  ClipboardList
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import "../../Styles/Shared/Sidebar.css";
@@ -95,7 +96,7 @@ export default function Sidebar() {
               onClick={() => setOpen(false)}
             >
               <FileText size={18} style={{ marginRight: "8px" }} />
-              Presupuesto a Confirmar
+              Presupuestos
             </NavLink>
           </li>
           <li>
@@ -116,6 +117,16 @@ export default function Sidebar() {
             >
               <DollarSign size={18} style={{ marginRight: "8px" }} />
               Ventas
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/ordenes"
+              className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+              onClick={() => setOpen(false)}
+            >
+              <ClipboardList size={18} style={{ marginRight: "8px" }} />
+              Órdenes
             </NavLink>
           </li>
         </ul>

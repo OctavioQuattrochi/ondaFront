@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from '../Shared/Sidebar';
 import '../../Styles/Admin/StockMateriaPrima.css';
 import AuthService from "../../Service/AuthService";
+import Paginator from "../Paginator";
 
 const StockMateriaPrima = () => {
   const [materials, setMaterials] = useState([]);
@@ -9,26 +10,27 @@ const StockMateriaPrima = () => {
   const [materialFilter, setMaterialFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [locations, setLocations] = useState([]);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     AuthService.getRawMaterials()
       .then(data => {
-        // Asegura que data siempre sea un array
         const mats = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
         setMaterials(mats);
-        // Extraer ubicaciones únicas para el select
         const uniqueLocations = Array.from(new Set(mats.map(mat => mat.location || mat.supplier).filter(Boolean)));
         setLocations(uniqueLocations);
       })
       .catch(() => setError("No se pudieron cargar las materias primas."));
   }, []);
 
-  // Filtrado por nombre de material (usa mat.material) y ubicación
   const filteredMaterials = materials.filter(mat => {
     const matchMaterial = (mat.material || "").toLowerCase().includes(materialFilter.toLowerCase());
     const matchLocation = locationFilter ? (mat.location === locationFilter || mat.supplier === locationFilter) : true;
     return matchMaterial && matchLocation;
   });
+
+  const paginatedMaterials = filteredMaterials.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="stock-layout">
@@ -43,7 +45,10 @@ const StockMateriaPrima = () => {
               id="material-input"
               type="text"
               value={materialFilter}
-              onChange={e => setMaterialFilter(e.target.value)}
+              onChange={e => {
+                setMaterialFilter(e.target.value);
+                setPage(1);
+              }}
               placeholder="Buscar material..."
               autoComplete="off"
             />
@@ -53,7 +58,10 @@ const StockMateriaPrima = () => {
             <select
               id="location-select"
               value={locationFilter}
-              onChange={e => setLocationFilter(e.target.value)}
+              onChange={e => {
+                setLocationFilter(e.target.value);
+                setPage(1);
+              }}
             >
               <option value="">Todas</option>
               {locations.map((loc, idx) => (
@@ -80,12 +88,12 @@ const StockMateriaPrima = () => {
                 <td colSpan={6} style={{ color: "red" }}>{error}</td>
               </tr>
             )}
-            {filteredMaterials.length === 0 && !error && (
+            {paginatedMaterials.length === 0 && !error && (
               <tr>
                 <td colSpan={6}>No hay materias primas registradas.</td>
               </tr>
             )}
-            {filteredMaterials.map((mat) => (
+            {paginatedMaterials.map((mat) => (
               <tr key={mat.id}>
                 <td>{mat.material || "--"}</td>
                 <td>{mat.description || "--"}</td>
@@ -97,6 +105,12 @@ const StockMateriaPrima = () => {
             ))}
           </tbody>
         </table>
+        <Paginator
+          totalItems={filteredMaterials.length}
+          pageSize={pageSize}
+          currentPage={page}
+          onPageChange={newPage => setPage(newPage)}
+        />
       </div>
     </div>
   );

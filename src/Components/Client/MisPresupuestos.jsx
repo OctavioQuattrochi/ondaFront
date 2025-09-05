@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../../Styles/Client/MisCompras.css";
 import AuthService from "../../Service/AuthService";
+import Paginator from "../Paginator";
 
 export default function MisPresupuestos() {
   const [presupuestos, setPresupuestos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     AuthService.getQuotes()
@@ -24,6 +27,11 @@ export default function MisPresupuestos() {
       .finally(() => setLoading(false));
   }, []);
 
+  const paginatedPresupuestos = presupuestos.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
+
   return (
     <div className="mis-compras-container">
       <h2 className="titulo-compras">Mis presupuestos</h2>
@@ -42,13 +50,14 @@ export default function MisPresupuestos() {
               <tr>
                 <td colSpan={4}>Cargando...</td>
               </tr>
-            ) : Array.isArray(presupuestos) && presupuestos.length === 0 ? (
+            ) : Array.isArray(paginatedPresupuestos) &&
+              paginatedPresupuestos.length === 0 ? (
               <tr>
                 <td colSpan={4}>No tienes presupuestos aún.</td>
               </tr>
             ) : (
-              Array.isArray(presupuestos) &&
-              presupuestos.map((item) => (
+              Array.isArray(paginatedPresupuestos) &&
+              paginatedPresupuestos.map((item) => (
                 <tr key={item.id}>
                   <td>{item.id}</td>
                   <td>
@@ -66,6 +75,12 @@ export default function MisPresupuestos() {
           </tbody>
         </table>
       </div>
+      <Paginator
+        currentPage={page}
+        totalItems={presupuestos.length}
+        pageSize={pageSize}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

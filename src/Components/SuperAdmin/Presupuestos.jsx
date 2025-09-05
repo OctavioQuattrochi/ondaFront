@@ -3,6 +3,7 @@ import Sidebar from '../Shared/Sidebar';
 import '../../Styles/SuperAdmin/Presupuestos.css';
 import { useNavigate } from 'react-router-dom';
 import AuthService from "../../Service/AuthService";
+import Paginator from "../Paginator";
 
 const ESTADOS = {
   pendiente: "Pendiente de revisión",
@@ -18,7 +19,9 @@ const Presupuestos = () => {
   const [presupuestos, setPresupuestos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filtroEstado, setFiltroEstado] = useState(""); // Nuevo estado para el filtro
+  const [filtroEstado, setFiltroEstado] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +38,12 @@ const Presupuestos = () => {
   const presupuestosFiltrados = filtroEstado
     ? presupuestos.filter(p => p.status === filtroEstado)
     : presupuestos;
+
+  useEffect(() => {
+    setPage(1);
+  }, [filtroEstado]);
+
+  const paginatedPresupuestos = presupuestosFiltrados.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div style={{ display: 'flex' }}>
@@ -73,10 +82,10 @@ const Presupuestos = () => {
                 <tr><td colSpan={6}>Cargando...</td></tr>
               ) : error ? (
                 <tr><td colSpan={6} style={{ color: "red" }}>{error}</td></tr>
-              ) : presupuestosFiltrados.length === 0 ? (
+              ) : paginatedPresupuestos.length === 0 ? (
                 <tr><td colSpan={6}>No hay presupuestos para mostrar.</td></tr>
               ) : (
-                presupuestosFiltrados.map((fila) => (
+                paginatedPresupuestos.map((fila) => (
                   <tr key={fila.id}>
                     <td>{fila.user?.name || fila.user_id}</td>
                     <td>${fila.cost || "--"}</td>
@@ -97,6 +106,12 @@ const Presupuestos = () => {
             </tbody>
           </table>
         </div>
+        <Paginator
+          total={presupuestosFiltrados.length}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );

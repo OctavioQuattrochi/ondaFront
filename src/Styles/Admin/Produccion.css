@@ -136,3 +136,44 @@
   background-color: #8e24aa;
   color: white;
 }
+
+/* --- Mejoras para la fila en edición --- */
+.tr-edicion {
+  background: #23234a !important;
+  border-left: 4px solid #6c63ff;
+}
+.tr-edicion td {
+  padding: 12px 8px;
+}
+.tr-edicion select,
+.tr-edicion input[type="number"] {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #181818;
+  color: #fff;
+  width: 140px;
+}
+.tr-edicion .btn {
+  margin-right: 8px;
+  min-width: 90px;
+  padding: 7px 0;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.tr-edicion .btn.aceptar {
+  background: #4caf50;
+  color: #fff;
+  border: none;
+}
+.tr-edicion .btn.aceptar:hover {
+  background: #388e3c;
+}
+.tr-edicion .btn.cancelar {
+  background: #9c27b0;
+  color: #fff;
+  border: none;
+}
+.tr-edicion .btn.cancelar:hover {
+  background: #6d1b7b;
+}

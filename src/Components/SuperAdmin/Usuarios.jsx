@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../Shared/Sidebar";
 import AuthService from "../../Service/AuthService";
 import "../../Styles/users.css";
+import Paginator from "../Paginator";
 
 const ROLES = ["superadmin", "admin", "empleado", "usuario"];
 
@@ -10,6 +11,8 @@ export default function Usuarios() {
   const [filtro, setFiltro] = useState({ role: "", name: "", email: "" });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   const fetchUsuarios = async () => {
     setLoading(true);
@@ -29,6 +32,10 @@ export default function Usuarios() {
     // eslint-disable-next-line
   }, [filtro]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [filtro]);
+
   const handleRoleChange = async (id, newRole) => {
     try {
       await AuthService.updateUserRole(id, newRole);
@@ -37,6 +44,8 @@ export default function Usuarios() {
       alert("No se pudo actualizar el rol.");
     }
   };
+
+  const paginatedUsuarios = usuarios.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div style={{ display: "flex" }}>
@@ -83,10 +92,10 @@ export default function Usuarios() {
                 <tr><td colSpan={5}>Cargando...</td></tr>
               ) : error ? (
                 <tr><td colSpan={5} style={{ color: "red" }}>{error}</td></tr>
-              ) : usuarios.length === 0 ? (
+              ) : paginatedUsuarios.length === 0 ? (
                 <tr><td colSpan={5}>No hay usuarios para mostrar.</td></tr>
               ) : (
-                usuarios.map(u => (
+                paginatedUsuarios.map(u => (
                   <tr key={u.id}>
                     <td>{u.id}</td>
                     <td>{u.name}</td>
@@ -109,6 +118,12 @@ export default function Usuarios() {
             </tbody>
           </table>
         </div>
+        <Paginator
+          currentPage={page}
+          totalCount={usuarios.length}
+          pageSize={pageSize}
+          onPageChange={p => setPage(p)}
+        />
       </div>
     </div>
   );

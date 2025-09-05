@@ -64,6 +64,7 @@ const Cart = () => {
         promo,
         items: cartItems
       });
+      await AuthService.clearCart(); // Limpia el carrito después de comprar
       navigate("/cart-success", {
         state: {
           orderNumber: response.order_number,

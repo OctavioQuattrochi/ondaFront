@@ -9,6 +9,8 @@ export default function Ventas() {
   const [error, setError] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
+  const [clienteFilter, setClienteFilter] = useState("");
+  const [tipoFilter, setTipoFilter] = useState("");
 
   const fetchVentas = async () => {
     setLoading(true);
@@ -17,6 +19,8 @@ export default function Ventas() {
       const filtros = {};
       if (fechaInicio) filtros.fecha_inicio = fechaInicio;
       if (fechaFin) filtros.fecha_fin = fechaFin;
+      if (clienteFilter) filtros.cliente = clienteFilter;
+      if (tipoFilter) filtros.tipo = tipoFilter;
       const data = await AuthService.getVentas(filtros);
       setVentas(Array.isArray(data) ? data : (data.data || []));
     } catch {
@@ -36,12 +40,26 @@ export default function Ventas() {
     fetchVentas();
   };
 
+  // Filtros locales si el backend no los soporta
+  const ventasFiltradas = ventas.filter(v => {
+    const matchCliente = clienteFilter
+      ? (v.cliente || v.user?.name || v.user_id || "").toLowerCase().includes(clienteFilter.toLowerCase())
+      : true;
+    const matchTipo = tipoFilter
+      ? (v.tipo || "").toLowerCase() === tipoFilter.toLowerCase()
+      : true;
+    return matchCliente && matchTipo;
+  });
+
+  // Opciones de tipo (puedes ajustar según tu backend)
+  const tipos = ["", "producto", "personalizado", "servicio"];
+
   return (
     <div style={{ display: "flex" }}>
       <Sidebar />
       <div className="presupuestos-container">
         <h2 className="titulo">Listado de Ventas</h2>
-        <form style={{ marginBottom: 16, display: "flex", gap: 12 }} onSubmit={handleFiltrar}>
+        <form style={{ marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap" }} onSubmit={handleFiltrar}>
           <div>
             <label>Desde: </label>
             <input
@@ -57,6 +75,26 @@ export default function Ventas() {
               value={fechaFin}
               onChange={e => setFechaFin(e.target.value)}
             />
+          </div>
+          <div>
+            <label>Cliente: </label>
+            <input
+              type="text"
+              value={clienteFilter}
+              onChange={e => setClienteFilter(e.target.value)}
+              placeholder="Buscar cliente..."
+            />
+          </div>
+          <div>
+            <label>Tipo: </label>
+            <select
+              value={tipoFilter}
+              onChange={e => setTipoFilter(e.target.value)}
+            >
+              {tipos.map((tipo, idx) => (
+                <option key={idx} value={tipo}>{tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : "Todos"}</option>
+              ))}
+            </select>
           </div>
           <button type="submit">Filtrar</button>
         </form>
@@ -78,10 +116,10 @@ export default function Ventas() {
                 <tr><td colSpan={7}>Cargando...</td></tr>
               ) : error ? (
                 <tr><td colSpan={7} style={{ color: "red" }}>{error}</td></tr>
-              ) : ventas.length === 0 ? (
+              ) : ventasFiltradas.length === 0 ? (
                 <tr><td colSpan={7}>No hay ventas para mostrar.</td></tr>
               ) : (
-                ventas.map(v => (
+                ventasFiltradas.map(v => (
                   <tr key={v.id}>
                     <td>{v.id}</td>
                     <td>{v.fecha || v.created_at?.slice(0,10) || "--"}</td>
