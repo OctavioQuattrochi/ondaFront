@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../Shared/Sidebar";
 import AuthService from "../../Service/AuthService";
-import "../../Styles/users.css"; // Reutiliza estilos si ya tienes uno general
+import "../../Styles/users.css";
+import Paginator from "../Paginator";
 
 export default function Ventas() {
   const [ventas, setVentas] = useState([]);
@@ -10,7 +11,8 @@ export default function Ventas() {
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [clienteFilter, setClienteFilter] = useState("");
-  const [tipoFilter, setTipoFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   const fetchVentas = async () => {
     setLoading(true);
@@ -20,7 +22,6 @@ export default function Ventas() {
       if (fechaInicio) filtros.fecha_inicio = fechaInicio;
       if (fechaFin) filtros.fecha_fin = fechaFin;
       if (clienteFilter) filtros.cliente = clienteFilter;
-      if (tipoFilter) filtros.tipo = tipoFilter;
       const data = await AuthService.getVentas(filtros);
       setVentas(Array.isArray(data) ? data : (data.data || []));
     } catch {
@@ -38,21 +39,17 @@ export default function Ventas() {
   const handleFiltrar = (e) => {
     e.preventDefault();
     fetchVentas();
+    setPage(1);
   };
 
-  // Filtros locales si el backend no los soporta
   const ventasFiltradas = ventas.filter(v => {
     const matchCliente = clienteFilter
       ? (v.cliente || v.user?.name || v.user_id || "").toLowerCase().includes(clienteFilter.toLowerCase())
       : true;
-    const matchTipo = tipoFilter
-      ? (v.tipo || "").toLowerCase() === tipoFilter.toLowerCase()
-      : true;
-    return matchCliente && matchTipo;
+    return matchCliente;
   });
 
-  // Opciones de tipo (puedes ajustar según tu backend)
-  const tipos = ["", "producto", "personalizado", "servicio"];
+  const paginatedVentas = ventasFiltradas.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div style={{ display: "flex" }}>
@@ -85,17 +82,6 @@ export default function Ventas() {
               placeholder="Buscar cliente..."
             />
           </div>
-          <div>
-            <label>Tipo: </label>
-            <select
-              value={tipoFilter}
-              onChange={e => setTipoFilter(e.target.value)}
-            >
-              {tipos.map((tipo, idx) => (
-                <option key={idx} value={tipo}>{tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : "Todos"}</option>
-              ))}
-            </select>
-          </div>
           <button type="submit">Filtrar</button>
         </form>
         <div className="tabla-container">
@@ -105,35 +91,35 @@ export default function Ventas() {
                 <th>ID</th>
                 <th>Fecha</th>
                 <th>Cliente</th>
-                <th>Detalle</th>
-                <th>Costo total</th>
                 <th>Total ingresado</th>
-                <th>Tipo</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7}>Cargando...</td></tr>
+                <tr><td colSpan={4}>Cargando...</td></tr>
               ) : error ? (
-                <tr><td colSpan={7} style={{ color: "red" }}>{error}</td></tr>
-              ) : ventasFiltradas.length === 0 ? (
-                <tr><td colSpan={7}>No hay ventas para mostrar.</td></tr>
+                <tr><td colSpan={4} style={{ color: "red" }}>{error}</td></tr>
+              ) : paginatedVentas.length === 0 ? (
+                <tr><td colSpan={4}>No hay ventas para mostrar.</td></tr>
               ) : (
-                ventasFiltradas.map(v => (
+                paginatedVentas.map(v => (
                   <tr key={v.id}>
                     <td>{v.id}</td>
                     <td>{v.fecha || v.created_at?.slice(0,10) || "--"}</td>
                     <td>{v.cliente || v.user?.name || v.user_id || "--"}</td>
-                    <td>{v.detalle || v.productos || v.descripcion || "--"}</td>
-                    <td>${v.costo_total ?? "--"}</td>
-                    <td>${v.total_ingresado ?? "--"}</td>
-                    <td>{v.tipo || "--"}</td>
+                    <td>${v.total ?? "--"}</td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
+        <Paginator
+          total={ventasFiltradas.length}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );

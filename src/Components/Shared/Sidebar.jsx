@@ -37,8 +37,7 @@ export default function Sidebar() {
         >
           ×
         </button>
-        <input type="text" className="search-input" placeholder="Ingrese su búsqueda" />
-        <ul className="sidebar-menu">
+        <ul className="sidebar-menu" style={{ marginTop: "50px" }}>
           <li>
             <NavLink
               to="/mis-compras"

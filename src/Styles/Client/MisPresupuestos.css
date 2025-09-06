@@ -1,0 +1,111 @@
+.mis-presupuestos-container {
+  max-width: 900px;
+  margin: 32px auto;
+  background: #181818;
+  border-radius: 12px;
+  box-shadow: 0 0 24px #0004;
+  padding: 32px 28px;
+  padding-bottom: 100px; /* Agregado para que el paginador no quede tapado por el footer */
+}
+
+.titulo-compras {
+  font-size: 2rem;
+  margin-bottom: 24px;
+  color: #9c27b0;
+  font-weight: 600;
+}
+
+.tabla-contenedor {
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.tabla-compras {
+  width: 100%;
+  border-collapse: collapse;
+  background: #222;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.tabla-compras th,
+.tabla-compras td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #333;
+  text-align: left;
+}
+
+.tabla-compras th {
+  background: #2c2c2c;
+  color: #b39ddb;
+  font-weight: 500;
+}
+
+.tabla-compras tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-compras tr:hover {
+  background: #292929;
+}
+
+.btn.aceptar {
+  background: #43a047;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  margin-right: 4px;
+}
+
+.btn.aceptar:disabled {
+  background: #a5d6a7;
+  color: #eee;
+  cursor: not-allowed;
+}
+
+.btn.cancelar {
+  background: #e53935;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.btn.cancelar:disabled {
+  background: #ef9a9a;
+  color: #eee;
+  cursor: not-allowed;
+}
+
+.paginator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.paginator button {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: none;
+  background: #9c27b0;
+  color: #fff;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.paginator button.active {
+  background: #6d1b7b;
+}
+
+.paginator button:disabled {
+  background: #ccc;
+  color: #888;
+  cursor: not-allowed;
+}

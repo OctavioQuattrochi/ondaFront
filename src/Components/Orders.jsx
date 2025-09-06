@@ -3,6 +3,7 @@ import Sidebar from "./Shared/Sidebar";
 import AuthService from "../Service/AuthService";
 import "../Styles/orders.css";
 import Paginator from "./Paginator";
+import OrderDetail from "./OrderDetail"; // Importa la nueva vista
 
 const ESTADOS = [
   { value: "", label: "Todos" },
@@ -21,6 +22,7 @@ export default function Orders() {
   const [estadoFilter, setEstadoFilter] = useState("");
   const [clienteFilter, setClienteFilter] = useState("");
   const [page, setPage] = useState(1);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const pageSize = 10;
 
   useEffect(() => {
@@ -91,15 +93,16 @@ export default function Orders() {
                 <th>Fecha</th>
                 <th>Detalle</th>
                 <th>Total</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7}>Cargando...</td></tr>
+                <tr><td colSpan={8}>Cargando...</td></tr>
               ) : error ? (
-                <tr><td colSpan={7} style={{ color: "red" }}>{error}</td></tr>
+                <tr><td colSpan={8} style={{ color: "red" }}>{error}</td></tr>
               ) : paginatedOrders.length === 0 ? (
-                <tr><td colSpan={7}>No hay órdenes para mostrar.</td></tr>
+                <tr><td colSpan={8}>No hay órdenes para mostrar.</td></tr>
               ) : (
                 paginatedOrders.map(order => (
                   <tr key={order.id}>
@@ -118,6 +121,11 @@ export default function Orders() {
                       </ul>
                     </td>
                     <td>${order.total ?? "--"}</td>
+                    <td>
+                      <button onClick={() => setSelectedOrder(order)}>
+                        Ver detalle
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -130,6 +138,13 @@ export default function Orders() {
           pageSize={pageSize}
           onPageChange={setPage}
         />
+        {selectedOrder && (
+          <OrderDetail
+            order={selectedOrder}
+            getEstadoLabel={getEstadoLabel}
+            onClose={() => setSelectedOrder(null)}
+          />
+        )}
       </div>
     </div>
   );

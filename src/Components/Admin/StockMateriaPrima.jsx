@@ -12,8 +12,16 @@ const StockMateriaPrima = () => {
   const [locations, setLocations] = useState([]);
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [editingId, setEditingId] = useState(null);
+  const [addQty, setAddQty] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    cargarMateriales();
+    // eslint-disable-next-line
+  }, []);
+
+  const cargarMateriales = () => {
     AuthService.getRawMaterials()
       .then(data => {
         const mats = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
@@ -22,7 +30,7 @@ const StockMateriaPrima = () => {
         setLocations(uniqueLocations);
       })
       .catch(() => setError("No se pudieron cargar las materias primas."));
-  }, []);
+  };
 
   const filteredMaterials = materials.filter(mat => {
     const matchMaterial = (mat.material || "").toLowerCase().includes(materialFilter.toLowerCase());
@@ -31,6 +39,21 @@ const StockMateriaPrima = () => {
   });
 
   const paginatedMaterials = filteredMaterials.slice((page - 1) * pageSize, page * pageSize);
+
+  const handleAddStock = async (id) => {
+    if (addQty <= 0) return;
+    setLoading(true);
+    try {
+      await AuthService.addRawMaterialStock(id, addQty);
+      setEditingId(null);
+      setAddQty(0);
+      cargarMateriales();
+    } catch {
+      setError("No se pudo agregar stock.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="stock-layout">
@@ -80,17 +103,18 @@ const StockMateriaPrima = () => {
               <th>Cantidad</th>
               <th>Tipo de medida</th>
               <th>Ubicación / Proveedor</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {error && (
               <tr>
-                <td colSpan={6} style={{ color: "red" }}>{error}</td>
+                <td colSpan={7} style={{ color: "red" }}>{error}</td>
               </tr>
             )}
             {paginatedMaterials.length === 0 && !error && (
               <tr>
-                <td colSpan={6}>No hay materias primas registradas.</td>
+                <td colSpan={7}>No hay materias primas registradas.</td>
               </tr>
             )}
             {paginatedMaterials.map((mat) => (
@@ -101,6 +125,43 @@ const StockMateriaPrima = () => {
                 <td>{mat.quantity}</td>
                 <td>{mat.unit || "--"}</td>
                 <td>{mat.location || mat.supplier || "--"}</td>
+                <td>
+                  {editingId === mat.id ? (
+                    <>
+                      <input
+                        type="number"
+                        min={1}
+                        value={addQty}
+                        onChange={e => setAddQty(Number(e.target.value))}
+                        style={{ width: 70, marginRight: 8 }}
+                      />
+                      <button
+                        className="btn aceptar"
+                        onClick={() => handleAddStock(mat.id)}
+                        disabled={loading}
+                      >
+                        {loading ? "Agregando..." : "Aceptar"}
+                      </button>
+                      <button
+                        className="btn cancelar"
+                        onClick={() => {
+                          setEditingId(null);
+                          setAddQty(0);
+                        }}
+                        disabled={loading}
+                      >
+                        Cancelar
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="btn editar"
+                      onClick={() => setEditingId(mat.id)}
+                    >
+                      Agregar stock
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

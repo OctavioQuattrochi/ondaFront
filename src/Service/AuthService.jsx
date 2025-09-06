@@ -284,7 +284,7 @@ const AuthService = {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.access_token;
     const params = new URLSearchParams(filtros).toString();
-    const response = await axios.get(`${API_URL}/api/ventas${params ? "?" + params : ""}`, {
+    const response = await axios.get(`${API_URL}/api/orders${params ? "?" + params : ""}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
@@ -343,6 +343,22 @@ const AuthService = {
     const response = await axios.get(`${API_URL}/api/stock`, {
       headers: { Authorization: `Bearer ${token}` }
     });
+    return response.data;
+  },
+
+  addRawMaterialStock: async (id, quantity) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user?.access_token;
+    const response = await axios.put(
+      `${API_URL}/api/raw-materials/${id}/add-stock`,
+      { quantity },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
     return response.data;
   },
 };
