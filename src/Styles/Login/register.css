@@ -44,13 +44,14 @@ body {
     padding: 12px;
     border-radius: 8px;
     border: none;
-    background-color: #eee9ff;
-    color: #333;
+    background-color: #222; /* Fondo oscuro */
+    color: #fff;            /* Texto claro */
     font-family: 'Poppins', sans-serif;
   }
   
   .form-input::placeholder {
-    color: #a59fbd;
+    color: #b39ddb;
+    opacity: 1;
   }
   
   .password-wrapper {
@@ -67,13 +68,27 @@ body {
     font-size: 18px;
   }
 
+  /* Mejor contraste para inputs de contraseña y email */
+.form-input[type="password"],
+.form-input[type="email"] {
+  background-color: #222;
+  color: #fff;
+}
+
+.form-input[type="password"]::placeholder,
+.form-input[type="email"]::placeholder {
+  color: #b39ddb;
+  opacity: 1;
+}
+
   .register-input {
-    background-color: #f2f0ff;
+    background-color: #222; /* Fondo oscuro */
     border: none;
     border-radius: 6px;
     padding: 12px;
     font-size: 14px;
     width: 100%;
+    color: #fff;
   }
   
   .form-button-wrapper {
@@ -97,4 +112,3 @@ body {
   .register-button:hover {
     background-color: #5e44cc;
   }
-  

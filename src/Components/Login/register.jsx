@@ -59,7 +59,7 @@ const Register = () => {
             type="email"
             id="email"
             className="form-input"
-            placeholder="ondaestudio@email.com"
+            placeholder="example@email.com"
             required
             value={form.email}
             onChange={handleChange}

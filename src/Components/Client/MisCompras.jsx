@@ -11,7 +11,7 @@ export default function MisCompras() {
 
   useEffect(() => {
     AuthService.getOrders()
-      .then(data => setOrders(data))
+      .then(data => setOrders(Array.isArray(data) ? data : []))
       .catch(() => setError("No se pudieron cargar las compras."));
   }, []);
 
@@ -43,7 +43,14 @@ export default function MisCompras() {
                   <ul>
                     {order.items.map((item, idx) => (
                       <li key={idx}>
-                        {item.product ? item.product.name : "Producto eliminado"} x{item.quantity}
+                        {item.variant && item.variant.product
+                          ? `${item.variant.product.name} (${item.variant.color})`
+                          : item.variant
+                            ? `Producto eliminado (${item.variant.color})`
+                            : item.product
+                              ? `${item.product.name} (${item.product.color})`
+                              : "Producto eliminado"
+                        } x{item.quantity}
                       </li>
                     ))}
                   </ul>

@@ -35,6 +35,17 @@ const PresupuestoDetalle = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
+  // Usa la variable de entorno de Vite
+  const API_URL = import.meta.env.VITE_API_URL;
+  const imagenUrl = presupuesto?.image
+    ? `${API_URL}/storage/${presupuesto.image}`
+    : null;
+
+  // Log para debug
+  useEffect(() => {
+    console.log("Imagen URL:", imagenUrl);
+  }, [imagenUrl]);
+
   const handleGuardar = async () => {
     try {
       await AuthService.updateQuote(id, {
@@ -47,51 +58,15 @@ const PresupuestoDetalle = () => {
     }
   };
 
-  // Calcular metros cuadrados si hay datos
-  const metrosCuadrados = presupuesto?.width_cm && presupuesto?.height_cm
-    ? ((presupuesto.width_cm / 100) * (presupuesto.height_cm / 100)).toFixed(2)
-    : "--";
-
-  // Extraer desglose del campo raw_response si existe
-  let desglose = [];
-  if (presupuesto?.breakdown && Array.isArray(presupuesto.breakdown)) {
-    desglose = presupuesto.breakdown;
-  } else if (presupuesto?.raw_response) {
-    try {
-      const raw = typeof presupuesto.raw_response === "string"
-        ? JSON.parse(presupuesto.raw_response)
-        : presupuesto.raw_response;
-
-      // Si el desglose está como array
-      if (raw.breakdown && Array.isArray(raw.breakdown)) {
-        desglose = raw.breakdown;
-      } else if (raw.choices && Array.isArray(raw.choices) && raw.choices[0]?.message?.content) {
-        // Si el desglose está como texto en message.content
-        const content = raw.choices[0].message.content;
-        const lines = content.split("\n").map(l => l.trim()).filter(Boolean);
-        desglose = lines
-          .filter(line =>
-            line.toLowerCase().includes("neón") ||
-            line.toLowerCase().includes("fuente") ||
-            line.toLowerCase().includes("acrílico") ||
-            line.toLowerCase().includes("total")
-          )
-          .map(line => ({ detalle: line }));
-      }
-    } catch (e) {
-      desglose = [];
-    }
-  }
-
   if (loading) return <div>Cargando...</div>;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
   if (!presupuesto) return <div>No se encontró el presupuesto.</div>;
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div className="presupuesto-layout">
       <Sidebar />
       <div className="detalle-container">
-        <h2 className="detalle-titulo">Presupuesto a confirmar - Detalle</h2>
+        <h2 className="detalle-titulo">Presupuesto - Detalle</h2>
         <div className="detalle-contenido">
           <div className="detalle-info">
             <p>
@@ -101,41 +76,23 @@ const PresupuestoDetalle = () => {
             </p>
             <p><strong>Tamaño:</strong> {presupuesto.width_cm} × {presupuesto.height_cm} cm</p>
             <p><strong>Color:</strong> {presupuesto.color}</p>
-            <p><strong>Especificaciones del cliente:</strong> {presupuesto.note || "-"}</p>
-            <p>
-              <strong>Total de metros cuadrados a utilizar:</strong>{" "}
-              <span className="metros">{metrosCuadrados} m²</span>
-            </p>
 
-            <div className="desglose-box">
+            {imagenUrl && (
+              <button
+                className="btn-ver-imagen"
+                onClick={() => window.open(imagenUrl, "_blank")}
+              >
+                Ver imagen adjunta
+              </button>
+            )}
+
+            <div className="desglose-box grande">
               <h4>Desglose del presupuesto</h4>
-              {desglose.length === 0 ? (
-                <p>No hay desglose disponible.</p>
-              ) : (
-                <table className="desglose-tabla">
-                  <thead>
-                    <tr>
-                      <th>Detalle</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {desglose.map((item, idx) => (
-                      <tr key={idx}>
-                        <td>
-                          {item.detalle ||
-                            [
-                              item.material && `Material: ${item.material}`,
-                              item.cantidad && `Cantidad: ${item.cantidad}`,
-                              item.costo_unitario !== undefined && `Costo unitario: $${Number(item.costo_unitario).toLocaleString("es-AR")}`,
-                              item.costo_total !== undefined && `Costo total: $${Number(item.costo_total).toLocaleString("es-AR")}`
-                            ].filter(Boolean).join(" | ")
-                          }
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
+              <textarea
+                value={presupuesto.breakdown || "No hay desglose disponible."}
+                readOnly
+                className="desglose-textarea"
+              />
             </div>
 
             <label className="input-label">
@@ -160,13 +117,7 @@ const PresupuestoDetalle = () => {
 
             <button className="guardar-btn" onClick={handleGuardar}>Guardar</button>
           </div>
-
-          <div className="detalle-imagen">
-            {/* Si tienes la imagen, muéstrala aquí */}
-            {/* <img src={presupuesto.image_url} alt="Producto" /> */}
-          </div>
         </div>
-
         <div className="detalle-footer">
           <button onClick={() => navigate(-1)}>Atrás</button>
         </div>

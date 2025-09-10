@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Paper } from '@mui/material';
+import { TextField, Button, Typography, Container, Paper, CircularProgress } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../Styles/Login/login.css';
 import AuthService from '../../Service/AuthService';
@@ -9,6 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { setIsLogged } = useAuth();
@@ -32,12 +33,15 @@ export default function Login() {
     setErrors(newErrors);
 
     if (valid) {
+      setLoading(true);
       try {
         await AuthService.login(email, password);
-        setIsLogged(true); // Actualiza el contexto de autenticación
-        navigate("/"); // Redirige al home o a la ruta que prefieras
+        setIsLogged(true);
+        navigate("/");
       } catch (err) {
         setErrors({ ...newErrors, password: 'Credenciales incorrectas.' });
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -65,6 +69,7 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             helperText={errors.email}
             error={!!errors.email}
+            disabled={loading}
           />
           <TextField
             variant="outlined"
@@ -80,15 +85,27 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             helperText={errors.password}
             error={!!errors.password}
+            disabled={loading}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             className="login-button"
+            disabled={loading}
+            style={{ position: "relative" }}
           >
-            Ingresar
+            {loading ? <CircularProgress size={24} color="primary" /> : "Ingresar"}
           </Button>
+          {loading && (
+            <Typography
+              variant="body2"
+              align="center"
+              style={{ marginTop: 16, color: "#888" }}
+            >
+              Iniciando sesión...
+            </Typography>
+          )}
 
           <Typography variant="body2" align="center" className="create-account-link">
             <Link to="/register" className="link">

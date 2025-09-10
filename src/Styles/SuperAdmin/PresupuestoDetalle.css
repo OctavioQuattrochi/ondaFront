@@ -1,3 +1,9 @@
+body {
+  background: #000;
+  margin: 0;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
 .detalle-container {
   background-color: #121212;
   color: white;
@@ -7,6 +13,10 @@
   margin: 40px auto;
   max-width: 1000px;
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .detalle-titulo {
@@ -22,9 +32,11 @@
 
 .detalle-contenido {
   display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   gap: 2rem;
+  width: 100%;
 }
 
 .detalle-info {
@@ -33,6 +45,9 @@
   flex-direction: column;
   gap: 0.8rem;
   min-width: 320px;
+  align-items: center;
+  text-align: center;
+  width: 100%;
 }
 
 .detalle-info p {
@@ -56,19 +71,6 @@
   margin: 18px 0 8px 0;
 }
 
-.detalle-imagen {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.detalle-imagen img {
-  width: 180px;
-  height: auto;
-  border-radius: 12px;
-}
-
 .guardar-btn {
   margin-top: 1rem;
   background-color: #5b5bff;
@@ -87,7 +89,7 @@
 
 .detalle-footer {
   margin-top: 2rem;
-  text-align: right;
+  text-align: center;
 }
 
 .detalle-footer button {
@@ -105,120 +107,86 @@
   background-color: #7878ff;
 }
 
-.metros {
-  font-weight: bold;
-  color: #43a047;
-}
-
 .desglose-box {
   margin: 24px 0;
   background: #222;
   border-radius: 8px;
   padding: 18px 16px;
   box-shadow: 0 0 12px #0002;
+  width: 98%;
+  max-width: 950px;
+}
+
+.desglose-box.grande {
+  width: 98%;
+  max-width: 950px;
 }
 
 .desglose-box h4 {
   margin-top: 0;
   color: #9c27b0;
+  text-align: center;
 }
 
-.desglose-tabla {
+.desglose-textarea {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 8px;
+  min-height: 350px;
   background: #222;
-  color: #fff;
-  font-size: 1rem;
-}
-
-.desglose-tabla th,
-.desglose-tabla td {
-  padding: 8px 10px;
-  border-bottom: 1px solid #333;
-  text-align: left;
-}
-
-.desglose-tabla th {
-  background-color: #3f3f3f;
-  color: #9c27b0;
-  font-weight: 500;
-}
-
-.desglose-tabla tr:hover {
-  background-color: #333;
-}
-
-.resumen-container {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background: #1e1e1e;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-}
-
-.resumen-titulo {
-  font-size: 1.8rem;
-  margin-bottom: 1.2rem;
-  color: #9c27b0;
-  text-align: center;
-}
-
-.resumen-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #333;
-}
-
-.resumen-item:last-child {
-  border-bottom: none;
-}
-
-.resumen-label {
-  font-weight: 500;
   color: #ccc;
-}
-
-.resumen-valor {
-  font-weight: 600;
-  color: #fff;
-}
-
-.btn-finalizar {
-  margin-top: 1.5rem;
-  background-color: #9c27b0;
-  color: white;
-  padding: 10px 20px;
-  border: none;
   border-radius: 8px;
-  cursor: pointer;
-  display: block;
-  width: 100%;
-  text-align: center;
-  font-size: 1.1rem;
-  transition: 0.3s ease;
+  border: none;
+  padding: 20px;
+  font-size: 1.15rem;
+  resize: none;
+  font-family: inherit;
+  text-align: left;
+  line-height: 1.6;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
-.btn-finalizar:hover {
-  background-color: #ab47bc;
+.btn-ver-imagen {
+  margin-bottom: 10px;
 }
 
-@media (max-width: 768px) {
-  .detalle-contenido {
-    flex-direction: column;
-  }
+.presupuesto-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #000;
+}
 
-  .detalle-info {
-    width: 100%;
-  }
+/* El contenedor principal se corre a la derecha del sidebar */
+.detalle-container {
+  background-color: #121212;
+  color: white;
+  padding: 2rem;
+  flex-grow: 1;
+  border-radius: 20px;
+  margin: 40px auto;
+  max-width: 1000px;
+  min-width: 350px;
+  margin-left: 280px; /* Sidebar width + margen */
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  .detalle-img {
-    width: 100%;
-    margin-top: 1rem;
+@media (max-width: 900px) {
+  .detalle-container {
+    max-width: 98vw;
+    padding: 1rem;
   }
-
-  .btn-finalizar {
+  .desglose-box,
+  .desglose-box.grande {
+    max-width: 98vw;
+    width: 98vw;
+    padding: 12px;
+  }
+  .desglose-textarea {
+    min-height: 220px;
+    padding: 12px;
     font-size: 1rem;
   }
 }

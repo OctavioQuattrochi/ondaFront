@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import AuthService from "../Service/AuthService";
 import "../Styles/cart.css";
 
-// Usa la misma lógica que en la tienda para mostrar imágenes locales
 const getLocalProductImage = (imageName) => {
   if (!imageName) return "";
   return `/src/sources/store/${imageName}`;
@@ -27,9 +26,19 @@ const Cart = () => {
       .catch(() => setLoading(false));
   }, []);
 
+  // Obtiene el precio: primero de la variante, si no, del producto base
+  const getPrecio = (item) => {
+    if (item.variant?.price !== undefined && item.variant?.price !== null) {
+      return parseFloat(item.variant.price);
+    }
+    return item.variant?.product?.final_price
+      ? parseFloat(item.variant.product.final_price)
+      : 0;
+  };
+
   useEffect(() => {
     const sub = items.reduce(
-      (acc, item) => acc + (parseFloat(item.product?.final_price || 0) * item.quantity),
+      (acc, item) => acc + (getPrecio(item) * item.quantity),
       0
     );
     setSubtotal(sub);
@@ -56,15 +65,16 @@ const Cart = () => {
   const handleCheckout = async () => {
     try {
       const cartItems = items.map(item => ({
-        product_id: item.product?.id,
-        quantity: item.quantity
+        variant_id: item.variant?.id,
+        quantity: item.quantity,
+        price_unit: getPrecio(item)
       }));
       const response = await AuthService.checkout({
         payment_method: payment,
         promo,
         items: cartItems
       });
-      await AuthService.clearCart(); // Limpia el carrito después de comprar
+      await AuthService.clearCart();
       navigate("/cart-success", {
         state: {
           orderNumber: response.order_number,
@@ -84,6 +94,7 @@ const Cart = () => {
       <div className="cart-table">
         <div className="cart-table-header">
           <div>Producto</div>
+          <div>Color</div>
           <div>Precio</div>
           <div>Cantidad</div>
           <div>Subtotal</div>
@@ -98,16 +109,19 @@ const Cart = () => {
               <div className="cart-product">
                 <img
                   src={
-                    item.product?.image
-                      ? getLocalProductImage(item.product.image)
+                    item.variant?.product?.image
+                      ? getLocalProductImage(item.variant.product.image)
                       : ""
                   }
-                  alt={item.product?.name}
+                  alt={item.variant?.product?.name}
                   className="cart-product-img"
                 />
-                <span>{item.product?.name}</span>
+                <span>
+                  {item.variant?.product?.name || "--"}
+                </span>
               </div>
-              <div>${parseFloat(item.product?.final_price || 0).toFixed(2)}</div>
+              <div>{item.variant?.color || "--"}</div>
+              <div>${getPrecio(item).toFixed(2)}</div>
               <div>
                 <input
                   type="number"
@@ -117,7 +131,7 @@ const Cart = () => {
                   className="cart-qty-input"
                 />
               </div>
-              <div>${(parseFloat(item.product?.final_price || 0) * item.quantity).toLocaleString()}</div>
+              <div>${(getPrecio(item) * item.quantity).toLocaleString()}</div>
               <button className="cart-remove-btn" onClick={() => handleRemove(item.id)}>×</button>
             </div>
           ))

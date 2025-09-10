@@ -4,18 +4,12 @@ import '../../Styles/Admin/StockProductos.css';
 import AuthService from "../../Service/AuthService";
 import Paginator from "../Paginator";
 
-const ESTADOS = [
-  "Pendiente",
-  "En produccion",
-  "Finalizado"
-];
-
 const StockProductos = () => {
   const [stock, setStock] = useState([]);
+  const [products, setProducts] = useState([]);
   const [error, setError] = useState("");
   const [productoFilter, setProductoFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
-  const [estadoFilter, setEstadoFilter] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -23,22 +17,29 @@ const StockProductos = () => {
     AuthService.getStock()
       .then(data => setStock(Array.isArray(data) ? data : []))
       .catch(() => setError("No se pudo cargar el stock de productos."));
+    AuthService.getProducts()
+      .then(data => setProducts(Array.isArray(data) ? data : []))
+      .catch(() => {}); // Si falla, solo no muestra el precio alternativo
   }, []);
 
   const filteredStock = stock.filter(item => {
     const matchProducto = productoFilter
-      ? (item.name || "").toLowerCase().includes(productoFilter.toLowerCase())
+      ? (item.product_name || "").toLowerCase().includes(productoFilter.toLowerCase())
       : true;
     const matchColor = colorFilter
       ? (item.color || "").toLowerCase().includes(colorFilter.toLowerCase())
       : true;
-    const matchEstado = estadoFilter
-      ? (item.status || "").toLowerCase() === estadoFilter.toLowerCase()
-      : true;
-    return matchProducto && matchColor && matchEstado;
+    return matchProducto && matchColor;
   });
 
   const paginatedStock = filteredStock.slice((page - 1) * pageSize, page * pageSize);
+
+  // Busca el precio en products si no está en la variante
+  const getPrecio = (item) => {
+    if (item.price !== undefined && item.price !== null) return `$${item.price}`;
+    const prod = products.find(p => p.id === item.product_id);
+    return prod?.final_price ? `$${prod.final_price}` : "--";
+  };
 
   return (
     <div className="stock-productos-layout">
@@ -70,21 +71,6 @@ const StockProductos = () => {
               placeholder="Buscar color..."
             />
           </label>
-          <label>
-            Estado:
-            <select
-              value={estadoFilter}
-              onChange={e => {
-                setEstadoFilter(e.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="">Todos</option>
-              {ESTADOS.map((estado, idx) => (
-                <option key={idx} value={estado}>{estado}</option>
-              ))}
-            </select>
-          </label>
         </div>
         <div className="tabla-container">
           <table className="tabla">
@@ -93,7 +79,7 @@ const StockProductos = () => {
                 <th>Producto</th>
                 <th>Color</th>
                 <th>Cantidad</th>
-                <th>Estado</th>
+                <th>Precio</th>
               </tr>
             </thead>
             <tbody>
@@ -107,12 +93,12 @@ const StockProductos = () => {
                   <td colSpan={4}>No hay productos en stock.</td>
                 </tr>
               )}
-              {paginatedStock.map((item, idx) => (
-                <tr key={idx}>
-                  <td>{item.name}</td>
+              {paginatedStock.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.product_name}</td>
                   <td>{item.color || "--"}</td>
                   <td>{item.quantity}</td>
-                  <td>{item.status || "--"}</td>
+                  <td>{getPrecio(item)}</td>
                 </tr>
               ))}
             </tbody>

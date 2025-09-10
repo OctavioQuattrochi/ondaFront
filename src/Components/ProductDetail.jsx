@@ -20,7 +20,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const [producto, setProducto] = useState(null);
   const [error, setError] = useState("");
-  const [productosMismoNombre, setProductosMismoNombre] = useState([]);
+  const [variantes, setVariantes] = useState([]);
   const [colorSeleccionado, setColorSeleccionado] = useState("");
 
   useEffect(() => {
@@ -45,22 +45,25 @@ const ProductDetail = () => {
         const data = await response.json();
         setProducto(data);
 
-        // Trae todos los productos para buscar variantes de color
-        const allResp = await fetch(`http://localhost:8123/api/products`, {
+        // Trae las variantes de este producto base
+        const variantesResp = await fetch(`http://localhost:8123/api/stock`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json"
           }
         });
-        const allProducts = await allResp.json();
-        // Filtra productos con el mismo nombre (ignorando mayúsculas/minúsculas)
-        const variantes = allProducts.filter(
-          p => p.name && data.name && p.name.toLowerCase() === data.name.toLowerCase()
+        const allVariantes = await variantesResp.json();
+        // Filtra variantes por product_id
+        const variantesProducto = allVariantes.filter(
+          v => v.product_id === data.id
         );
-        setProductosMismoNombre(variantes);
+        setVariantes(variantesProducto);
 
-        // Si el producto actual tiene color, lo selecciona por defecto
-        setColorSeleccionado(data.color || (variantes[0]?.color ?? ""));
+        // Selecciona el color por defecto
+        setColorSeleccionado(
+          data.color ||
+          (variantesProducto[0]?.color ?? "")
+        );
       } catch {
         setError("No se pudo cargar el producto");
       }
@@ -76,15 +79,23 @@ const ProductDetail = () => {
     return getImageForProduct(producto?.name);
   };
 
-  // Obtiene los colores disponibles para este producto
-  const coloresDisponibles = productosMismoNombre
-    .map(p => p.color)
-    .filter((c, idx, arr) => c && arr.indexOf(c) === idx && c !== "Sin color");
+  // Colores disponibles de las variantes
+  const coloresDisponibles = variantes
+    .map(v => v.color)
+    .filter((c, idx, arr) => c && arr.indexOf(c) === idx);
 
-  // Busca el producto con el color seleccionado
-  const productoConColor = productosMismoNombre.find(
-    p => p.color === colorSeleccionado
-  ) || producto;
+  // Busca la variante seleccionada
+  const varianteSeleccionada = variantes.find(
+    v => v.color === colorSeleccionado
+  );
+
+  // Obtiene el precio: primero de la variante, si no, del producto base
+  const getPrecio = () => {
+    if (varianteSeleccionada?.price !== undefined && varianteSeleccionada?.price !== null) {
+      return varianteSeleccionada.price;
+    }
+    return producto?.final_price ?? 0;
+  };
 
   const handleAddToCart = async () => {
     const logged = await AuthService.isLoggedIn();
@@ -93,9 +104,12 @@ const ProductDetail = () => {
       navigate("/login");
       return;
     }
+    if (!varianteSeleccionada) {
+      alert("Seleccioná un color válido.");
+      return;
+    }
     try {
-      // Por defecto, agrega 1 unidad (la cantidad se ajusta en el carrito)
-      await AuthService.addToCart(productoConColor.id, 1, productoConColor.final_price);
+      await AuthService.addToCart(varianteSeleccionada.id, 1, getPrecio());
       navigate("/cart");
     } catch {
       alert("No se pudo añadir al carrito");
@@ -110,13 +124,15 @@ const ProductDetail = () => {
       <div className="product-detail-card">
         <img
           src={getProductImage()}
-          alt={productoConColor.name}
+          alt={producto.name}
           className="product-detail-image"
         />
         <div className="product-detail-info">
-          <h2 className="product-detail-title">{productoConColor.name}</h2>
-          <p className="product-detail-description">{productoConColor.description}</p>
-          <div className="product-detail-price">Precio: ${productoConColor.final_price}</div>
+          <h2 className="product-detail-title">{producto.name}</h2>
+          <p className="product-detail-description">{producto.description}</p>
+          <div className="product-detail-price">
+            Precio: ${getPrecio()}
+          </div>
           <div style={{ margin: "1rem 0" }}>
             <label htmlFor="color" style={{ marginRight: 8 }}>Color:</label>
             <select
@@ -130,7 +146,7 @@ const ProductDetail = () => {
                   <option key={c} value={c}>{c}</option>
                 ))
               ) : (
-                <option value={productoConColor.color}>{productoConColor.color}</option>
+                <option value={producto.color}>{producto.color}</option>
               )}
             </select>
           </div>

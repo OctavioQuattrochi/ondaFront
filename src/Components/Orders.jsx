@@ -3,7 +3,7 @@ import Sidebar from "./Shared/Sidebar";
 import AuthService from "../Service/AuthService";
 import "../Styles/orders.css";
 import Paginator from "./Paginator";
-import OrderDetail from "./OrderDetail"; // Importa la nueva vista
+import OrderDetail from "./OrderDetail";
 
 const ESTADOS = [
   { value: "", label: "Todos" },
@@ -47,6 +47,19 @@ export default function Orders() {
   const getEstadoLabel = (value) => {
     const estado = ESTADOS.find(e => e.value === value);
     return estado ? estado.label : value || "--";
+  };
+
+  // Nueva función para actualizar el estado de una orden en el listado
+  const handleEstadoChange = (orderId, nuevoEstado) => {
+    setOrders(orders =>
+      orders.map(o =>
+        o.id === orderId ? { ...o, status: nuevoEstado } : o
+      )
+    );
+    // También actualiza el estado en el modal si está abierto
+    setSelectedOrder(order =>
+      order && order.id === orderId ? { ...order, status: nuevoEstado } : order
+    );
   };
 
   return (
@@ -115,7 +128,14 @@ export default function Orders() {
                       <ul>
                         {order.items?.map((item, idx) => (
                           <li key={idx}>
-                            {item.product ? item.product.name : "Producto eliminado"} x{item.quantity}
+                            {item.variant && item.variant.product
+                              ? `${item.variant.product.name} (${item.variant.color})`
+                              : item.variant
+                                ? `Producto eliminado (${item.variant.color})`
+                                : item.product
+                                  ? `${item.product.name} (${item.product.color})`
+                                  : "Producto eliminado"
+                            } x{item.quantity}
                           </li>
                         ))}
                       </ul>
@@ -143,6 +163,7 @@ export default function Orders() {
             order={selectedOrder}
             getEstadoLabel={getEstadoLabel}
             onClose={() => setSelectedOrder(null)}
+            onEstadoChange={handleEstadoChange}
           />
         )}
       </div>

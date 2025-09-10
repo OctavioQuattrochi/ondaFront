@@ -29,6 +29,7 @@ const Produccion = () => {
   const [nuevoColor, setNuevoColor] = useState("");
   const [nuevaCantidad, setNuevaCantidad] = useState(1);
   const [nuevoEstado, setNuevoEstado] = useState(ESTADOS[0]);
+  const [nuevoPrecio, setNuevoPrecio] = useState(""); // <-- Nuevo estado para el precio
   const [loading, setLoading] = useState(false);
 
   // Paginador
@@ -98,11 +99,19 @@ const Produccion = () => {
     setLoading(true);
     setError("");
     try {
+      // Buscar el producto original
+      const productoOriginal = productos.find(p => p.id === nuevoProductoId);
+      // Si el input de precio está vacío, usar el precio del producto original
+      const priceValue = nuevoPrecio !== "" && !isNaN(nuevoPrecio)
+        ? parseFloat(nuevoPrecio)
+        : productoOriginal?.final_price ?? 0;
+
       const data = {
         product_id: nuevoProductoId,
         color: nuevoColor,
         quantity: nuevaCantidad,
-        status: nuevoEstado
+        status: nuevoEstado,
+        price: priceValue // <-- Enviar el precio
       };
       await AuthService.createProductionBatch(data);
       cargarLotes();
@@ -111,6 +120,7 @@ const Produccion = () => {
       setNuevoColor("");
       setNuevaCantidad(1);
       setNuevoEstado(ESTADOS[0]);
+      setNuevoPrecio("");
     } catch (err) {
       setError("No se pudo crear el lote.");
     } finally {
@@ -199,6 +209,7 @@ const Produccion = () => {
                 <th>Color/Detalle</th>
                 <th>Estado</th>
                 <th>Cantidad</th>
+                <th>Precio</th>
                 <th>Fecha estado</th>
                 <th>Acciones</th>
               </tr>
@@ -206,12 +217,12 @@ const Produccion = () => {
             <tbody>
               {error && (
                 <tr>
-                  <td colSpan={7} style={{ color: "red" }}>{error}</td>
+                  <td colSpan={8} style={{ color: "red" }}>{error}</td>
                 </tr>
               )}
               {paginatedLotes.length === 0 && paginatedPersonalizados.length === 0 && !error && (
                 <tr>
-                  <td colSpan={7}>No hay registros.</td>
+                  <td colSpan={8}>No hay registros.</td>
                 </tr>
               )}
               {/* Lotes de producción */}
@@ -255,6 +266,14 @@ const Produccion = () => {
                       ) : (
                         lote.quantity
                       )}
+                    </td>
+                    <td>
+                      {lote.price !== undefined
+                        ? `$${parseFloat(lote.price).toLocaleString()}`
+                        : prod?.final_price
+                          ? `$${parseFloat(prod.final_price).toLocaleString()}`
+                          : "--"
+                      }
                     </td>
                     <td>{lote.updated_at ? new Date(lote.updated_at).toLocaleDateString() : "--"}</td>
                     <td>
@@ -315,6 +334,12 @@ const Produccion = () => {
                       )}
                     </td>
                     <td>{p.quantity || "--"}</td>
+                    <td>
+                      {p.price !== undefined
+                        ? `$${parseFloat(p.price).toLocaleString()}`
+                        : "--"
+                      }
+                    </td>
                     <td>{p.updated_at ? new Date(p.updated_at).toLocaleDateString() : "--"}</td>
                     <td>
                       {isEditing ? (
@@ -385,6 +410,21 @@ const Produccion = () => {
             />
           </div>
           <div className="campo">
+            <label>Precio:</label>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={nuevoPrecio}
+              onChange={e => setNuevoPrecio(e.target.value)}
+              placeholder={
+                nuevoProductoId
+                  ? `Precio por defecto: $${productos.find(p => p.id === nuevoProductoId)?.final_price ?? 0}`
+                  : "Ingrese precio o deje vacío"
+              }
+            />
+          </div>
+          <div className="campo">
             <label>Estado:</label>
             <select
               value={nuevoEstado}
@@ -408,6 +448,7 @@ const Produccion = () => {
                 setNuevoColor("");
                 setNuevaCantidad(1);
                 setNuevoEstado(ESTADOS[0]);
+                setNuevoPrecio("");
               }}
               disabled={loading}
             >
