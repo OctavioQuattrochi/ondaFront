@@ -11,6 +11,7 @@ const ESTADOS = {
   en_produccion: "En producción",
   listo_para_entregar: "Listo para entregar",
   entregado: "Entregado",
+  cancelado: "Cancelado",
 };
 
 export default function MisPresupuestos() {
@@ -51,7 +52,10 @@ export default function MisPresupuestos() {
         await AuthService.updateQuote(id, { status: "pendiente_pago" });
         cargarPresupuestos();
       }
-      // Si rechaza, no se hace nada
+      if (accion === "rechazar") {
+        await AuthService.updateQuote(id, { status: "cancelado" }); 
+        cargarPresupuestos();
+      }
     } catch {
       // Podrías mostrar un error aquí si quieres
     } finally {

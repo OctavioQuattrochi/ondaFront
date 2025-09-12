@@ -16,7 +16,65 @@ export default function Sidebar() {
   const { isLogged } = useAuth();
   const [open, setOpen] = useState(false);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const role = user?.role;
+
   if (!isLogged) return null;
+
+  if (role === "usuario") {
+    return (
+      <>
+        {!open && (
+          <button
+            className="sidebar-toggle-btn"
+            onClick={() => setOpen(true)}
+            aria-label="Abrir menú"
+          >
+            ☰
+          </button>
+        )}
+        <div className={`sidebar ${open ? "open" : ""}`}>
+          <button
+            className="sidebar-close-btn"
+            onClick={() => setOpen(false)}
+            aria-label="Cerrar menú"
+          >
+            ×
+          </button>
+          <ul className="sidebar-menu" style={{ marginTop: "50px" }}>
+            <li>
+              <NavLink
+                to="/mis-compras"
+                className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+                onClick={() => setOpen(false)}
+              >
+                <PackageOpen size={18} style={{ marginRight: "8px" }} />
+                Mis compras
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/mis-presupuestos"
+                className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+                onClick={() => setOpen(false)}
+              >
+                <FileText size={18} style={{ marginRight: "8px" }} />
+                Mis presupuestos
+              </NavLink>
+            </li>
+          </ul>
+        </div>
+        {open && (
+          <div
+            className="sidebar-backdrop"
+            onClick={() => setOpen(false)}
+          />
+        )}
+      </>
+    );
+  }
+
+  const showUsuarios = role === "superadmin";
 
   return (
     <>
@@ -98,16 +156,18 @@ export default function Sidebar() {
               Presupuestos
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to="/usuarios"
-              className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
-              onClick={() => setOpen(false)}
-            >
-              <Users size={18} style={{ marginRight: "8px" }} />
-              Usuarios
-            </NavLink>
-          </li>
+          {showUsuarios && (
+            <li>
+              <NavLink
+                to="/usuarios"
+                className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
+                onClick={() => setOpen(false)}
+              >
+                <Users size={18} style={{ marginRight: "8px" }} />
+                Usuarios
+              </NavLink>
+            </li>
+          )}
           <li>
             <NavLink
               to="/ventas"

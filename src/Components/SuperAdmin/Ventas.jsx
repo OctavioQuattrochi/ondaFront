@@ -23,7 +23,34 @@ export default function Ventas() {
       if (fechaFin) filtros.fecha_fin = fechaFin;
       if (clienteFilter) filtros.cliente = clienteFilter;
       const data = await AuthService.getVentas(filtros);
-      setVentas(Array.isArray(data) ? data : (data.data || []));
+
+      // Unificar orders y quotes en un solo array
+      const orders = Array.isArray(data.orders) ? data.orders : [];
+      const quotes = Array.isArray(data.quotes) ? data.quotes : [];
+
+      // Normalizar ambos tipos para mostrar en la misma tabla
+      const ventasUnificadas = [
+        ...orders.map(o => ({
+          id: o.id,
+          order_number: o.order_number || o.order || "--",
+          fecha: o.fecha || o.created_at?.slice(0,10) || "--",
+          cliente: o.user?.name || o.user_id || "--",
+          total: o.total,
+          status: o.status,
+          tipo: "order"
+        })),
+        ...quotes.map(q => ({
+          id: `Q${q.id}`,
+          order_number: q.codigo || "--",
+          fecha: q.fecha || q.created_at?.slice(0,10) || "--",
+          cliente: q.user?.name || q.user_id || "--",
+          total: q.estimated_price, // <-- CAMBIO AQUÍ
+          status: q.status,
+          tipo: "quote"
+        }))
+      ];
+
+      setVentas(ventasUnificadas);
     } catch {
       setError("No se pudieron cargar las ventas.");
     } finally {
@@ -44,11 +71,14 @@ export default function Ventas() {
 
   // Mostrar solo ventas con estado pagado o posterior
   const ventasFiltradas = ventas.filter(v => {
-    const estado = (v.status || v.estado || "").toLowerCase();
-    const estadosValidos = ["paid", "processing", "shipped", "delivered"];
+    const estado = (v.status || "").toLowerCase();
+    const estadosValidos = [
+      "paid", "processing", "shipped", "delivered",
+      "pagado", "en_produccion", "listo_para_entregar", "entregado"
+    ];
     const esVentaValida = estadosValidos.includes(estado);
     const matchCliente = clienteFilter
-      ? (v.cliente || v.user?.name || v.user_id || "").toLowerCase().includes(clienteFilter.toLowerCase())
+      ? (v.cliente || "").toLowerCase().includes(clienteFilter.toLowerCase())
       : true;
     return esVentaValida && matchCliente;
   });
@@ -116,9 +146,9 @@ export default function Ventas() {
                 paginatedVentas.map(v => (
                   <tr key={v.id}>
                     <td>{v.id}</td>
-                    <td>{v.order_number || v.order || "--"}</td>
-                    <td>{v.fecha || v.created_at?.slice(0,10) || "--"}</td>
-                    <td>{v.cliente || v.user?.name || v.user_id || "--"}</td>
+                    <td>{v.order_number}</td>
+                    <td>{v.fecha}</td>
+                    <td>{v.cliente}</td>
                     <td>${v.total ?? "--"}</td>
                   </tr>
                 ))

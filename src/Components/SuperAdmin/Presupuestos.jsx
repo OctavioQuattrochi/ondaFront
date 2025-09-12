@@ -12,7 +12,8 @@ const ESTADOS = {
   pagado: "Pagado",
   en_produccion: "En producción",
   listo_para_entregar: "Listo para entregar",
-  entregado: "Entregado"
+  entregado: "Entregado",
+  cancelado: "Cancelado",
 };
 
 const Presupuestos = () => {

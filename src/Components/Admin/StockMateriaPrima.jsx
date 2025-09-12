@@ -32,6 +32,12 @@ const StockMateriaPrima = () => {
       .catch(() => setError("No se pudieron cargar las materias primas."));
   };
 
+  const isAcrilico = (material) => {
+    if (!material) return false;
+    const matLower = material.toLowerCase();
+    return matLower.includes("acrílico") || matLower.includes("acrilico");
+  };
+
   const filteredMaterials = materials.filter(mat => {
     const matchMaterial = (mat.material || "").toLowerCase().includes(materialFilter.toLowerCase());
     const matchLocation = locationFilter ? (mat.location === locationFilter || mat.supplier === locationFilter) : true;
@@ -44,7 +50,13 @@ const StockMateriaPrima = () => {
     if (addQty <= 0) return;
     setLoading(true);
     try {
-      await AuthService.addRawMaterialStock(id, addQty);
+      // Si es acrílico, convierte m² a cm² antes de enviar
+      const mat = materials.find(m => m.id === id);
+      let qtyToSend = addQty;
+      if (isAcrilico(mat.material)) {
+        qtyToSend = addQty * 10000; // m² a cm²
+      }
+      await AuthService.addRawMaterialStock(id, qtyToSend);
       setEditingId(null);
       setAddQty(0);
       cargarMateriales();
@@ -98,10 +110,7 @@ const StockMateriaPrima = () => {
           <thead>
             <tr>
               <th>Material</th>
-              <th>Descripción</th>
-              <th>Estado</th>
               <th>Cantidad</th>
-              <th>Tipo de medida</th>
               <th>Ubicación / Proveedor</th>
               <th>Acciones</th>
             </tr>
@@ -109,21 +118,22 @@ const StockMateriaPrima = () => {
           <tbody>
             {error && (
               <tr>
-                <td colSpan={7} style={{ color: "red" }}>{error}</td>
+                <td colSpan={4} style={{ color: "red" }}>{error}</td>
               </tr>
             )}
             {paginatedMaterials.length === 0 && !error && (
               <tr>
-                <td colSpan={7}>No hay materias primas registradas.</td>
+                <td colSpan={4}>No hay materias primas registradas.</td>
               </tr>
             )}
             {paginatedMaterials.map((mat) => (
               <tr key={mat.id}>
                 <td>{mat.material || "--"}</td>
-                <td>{mat.description || "--"}</td>
-                <td>{mat.status || "--"}</td>
-                <td>{mat.quantity}</td>
-                <td>{mat.unit || "--"}</td>
+                <td>
+                  {isAcrilico(mat.material)
+                    ? `${(mat.quantity / 10000).toFixed(2)} m²`
+                    : mat.quantity}
+                </td>
                 <td>{mat.location || mat.supplier || "--"}</td>
                 <td>
                   {editingId === mat.id ? (
@@ -134,6 +144,7 @@ const StockMateriaPrima = () => {
                         value={addQty}
                         onChange={e => setAddQty(Number(e.target.value))}
                         style={{ width: 70, marginRight: 8 }}
+                        placeholder={isAcrilico(mat.material) ? "m²" : ""}
                       />
                       <button
                         className="btn aceptar"

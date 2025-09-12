@@ -11,7 +11,8 @@ const ESTADOS = [
   { value: "pagado", label: "Pagado" },
   { value: "en_produccion", label: "En producción" },
   { value: "listo_para_entregar", label: "Listo para entregar" },
-  { value: "entregado", label: "Entregado" }
+  { value: "entregado", label: "Entregado" },
+  { value: "cancelado", label: "Cancelado" }
 ];
 
 const PresupuestoDetalle = () => {

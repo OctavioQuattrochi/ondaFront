@@ -239,9 +239,10 @@ const AuthService = {
     return response.data;
   },
 
+  // Cambiado para usar el nuevo endpoint /ventas
   async getVentas(filtros = {}) {
     const params = new URLSearchParams(filtros).toString();
-    const response = await axios.get(`${API_URL}/api/orders${params ? "?" + params : ""}`, {
+    const response = await axios.get(`${API_URL}/api/ventas${params ? "?" + params : ""}`, {
       headers: authHeader()
     });
     return response.data;

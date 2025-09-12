@@ -35,6 +35,8 @@ const Register = () => {
         form.lastname,
         form.confirmPassword
       );
+      
+      await AuthService.login(form.email, form.password);
       navigate('/addressform');
     } catch (err) {
       setError('Error al registrar. Intenta nuevamente.');
