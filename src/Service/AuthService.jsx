@@ -12,7 +12,6 @@ const authHeader = () => ({
 });
 
 const AuthService = {
-  // Login: guarda el usuario completo (token + datos)
   async login(email, password) {
     const response = await axios.post(`${API_URL}/api/login`, { email, password });
     if (!response.data.access_token) throw new Error("Login failed");
@@ -165,7 +164,6 @@ const AuthService = {
     localStorage.removeItem("user");
   },
 
-  // --- Carrito ---
   async getCartItems() {
     const response = await axios.get(`${API_URL}/api/cart`, {
       headers: authHeader()
@@ -239,7 +237,6 @@ const AuthService = {
     return response.data;
   },
 
-  // Cambiado para usar el nuevo endpoint /ventas
   async getVentas(filtros = {}) {
     const params = new URLSearchParams(filtros).toString();
     const response = await axios.get(`${API_URL}/api/ventas${params ? "?" + params : ""}`, {
@@ -263,7 +260,6 @@ const AuthService = {
     await axios.post(`${API_URL}/api/password/reset`, data);
   },
 
-  // --- Producción ---
   async getProductionBatches(status = "Pendiente,En produccion") {
     const response = await axios.get(`${API_URL}/api/produccion`, {
       params: { status },
@@ -293,7 +289,6 @@ const AuthService = {
     });
   },
 
-  // --- Stock ---
   async getStock() {
     const response = await axios.get(`${API_URL}/api/stock`, {
       headers: authHeader()

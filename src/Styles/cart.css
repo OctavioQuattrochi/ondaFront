@@ -41,7 +41,7 @@
 .cart-table-header {
   font-weight: 600;
   border-bottom: 1px solid #333;
-  color: #ffd700;
+  color: #a259ff;
   font-size: 1.1rem;
 }
 
@@ -83,7 +83,7 @@
 .cart-remove-btn {
   background: none;
   border: none;
-  color: #ffd700;
+  color: #a259ff; /* lila/violeta */
   font-size: 1.5rem;
   cursor: pointer;
   transition: color 0.2s;
@@ -113,7 +113,7 @@
 
 .cart-promo-btn {
   padding: 0.7rem 2.2rem;
-  background: #6c63ff;
+  background: #a259ff; /* lila/violeta */
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -124,8 +124,8 @@
 }
 
 .cart-promo-btn:hover {
-  background: #ffd700;
-  color: #222;
+  background: #fff;
+  color: #a259ff; /* lila/violeta */
 }
 
 /* Resumen y pago */
@@ -159,7 +159,7 @@
 .cart-summary > div:last-child {
   font-size: 1.25rem;
   font-weight: bold;
-  color: #ffd700;
+  color: #a259ff; /* lila/violeta */
 }
 
 .cart-payment {
@@ -179,8 +179,8 @@
 .cart-checkout-btn {
   margin-top: 1.2rem;
   padding: 0.8rem 2.2rem;
-  background: #ffd700;
-  color: #222;
+  background: #a259ff; /* lila/violeta */
+  color: #fff;
   border: none;
   border-radius: 8px;
   font-size: 1.1rem;
@@ -192,7 +192,7 @@
 
 .cart-checkout-btn:hover {
   background: #fff;
-  color: #222;
+  color: #a259ff; /* lila/violeta */
 }
 
 /* Beneficios */

@@ -22,6 +22,7 @@ const ProductDetail = () => {
   const [error, setError] = useState("");
   const [variantes, setVariantes] = useState([]);
   const [colorSeleccionado, setColorSeleccionado] = useState("");
+  const [addLoading, setAddLoading] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -34,7 +35,6 @@ const ProductDetail = () => {
       const user = JSON.parse(localStorage.getItem("user"));
       const token = user?.access_token;
       try {
-        // Trae el producto actual
         const response = await fetch(`http://localhost:8123/api/products/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -45,7 +45,6 @@ const ProductDetail = () => {
         const data = await response.json();
         setProducto(data);
 
-        // Trae las variantes de este producto base
         const variantesResp = await fetch(`http://localhost:8123/api/stock`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -53,13 +52,12 @@ const ProductDetail = () => {
           }
         });
         const allVariantes = await variantesResp.json();
-        // Filtra variantes por product_id
+        
         const variantesProducto = allVariantes.filter(
           v => v.product_id === data.id
         );
         setVariantes(variantesProducto);
 
-        // Selecciona el color por defecto
         setColorSeleccionado(
           data.color ||
           (variantesProducto[0]?.color ?? "")
@@ -71,7 +69,7 @@ const ProductDetail = () => {
     fetchProduct();
   }, [id, navigate]);
 
-  // Obtiene la imagen: primero intenta con el campo image del backend, si no, usa la local
+  
   const getProductImage = () => {
     if (producto?.image) {
       return `/src/sources/store/${producto.image}`;
@@ -79,17 +77,14 @@ const ProductDetail = () => {
     return getImageForProduct(producto?.name);
   };
 
-  // Colores disponibles de las variantes
   const coloresDisponibles = variantes
     .map(v => v.color)
     .filter((c, idx, arr) => c && arr.indexOf(c) === idx);
 
-  // Busca la variante seleccionada
   const varianteSeleccionada = variantes.find(
     v => v.color === colorSeleccionado
   );
 
-  // Obtiene el precio: primero de la variante, si no, del producto base
   const getPrecio = () => {
     if (varianteSeleccionada?.price !== undefined && varianteSeleccionada?.price !== null) {
       return varianteSeleccionada.price;
@@ -108,11 +103,14 @@ const ProductDetail = () => {
       alert("Seleccioná un color válido.");
       return;
     }
+    setAddLoading(true);
     try {
       await AuthService.addToCart(varianteSeleccionada.id, 1, getPrecio());
       navigate("/cart");
     } catch {
       alert("No se pudo añadir al carrito");
+    } finally {
+      setAddLoading(false);
     }
   };
 
@@ -151,9 +149,18 @@ const ProductDetail = () => {
             </select>
           </div>
           <div className="product-detail-actions">
-            <button className="product-detail-btn" onClick={handleAddToCart}>
-              Añadir al carrito
+            <button
+              className="product-detail-btn"
+              onClick={handleAddToCart}
+              disabled={addLoading}
+            >
+              {addLoading ? "Agregando..." : "Añadir al carrito"}
             </button>
+            {addLoading && (
+              <div className="product-detail-loading" style={{ marginTop: 8 }}>
+                Agregando al carrito...
+              </div>
+            )}
           </div>
         </div>
       </div>

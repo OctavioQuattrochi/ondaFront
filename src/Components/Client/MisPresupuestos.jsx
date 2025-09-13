@@ -14,6 +14,8 @@ const ESTADOS = {
   cancelado: "Cancelado",
 };
 
+const WHATSAPP = "+5493512505516";
+
 export default function MisPresupuestos() {
   const [presupuestos, setPresupuestos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +52,10 @@ export default function MisPresupuestos() {
     try {
       if (accion === "aceptar") {
         await AuthService.updateQuote(id, { status: "pendiente_pago" });
+        
+        const mensaje = `Hola, tengo el presupuesto ${id}, aguardo tu respuesta para efectuar el pago y coordinar envío`;
+        const url = `https://wa.me/${WHATSAPP.replace("+", "")}?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, "_blank");
         cargarPresupuestos();
       }
       if (accion === "rechazar") {

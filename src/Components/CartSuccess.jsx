@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const CBU = "0000003100000001234567"; 
-const WHATSAPP = "5491123456789";
+const WHATSAPP = "+54 9 351 2505516";
 
 const CartSuccess = () => {
   const location = useLocation();

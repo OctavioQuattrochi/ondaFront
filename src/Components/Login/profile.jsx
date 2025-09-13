@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import AuthService from "../../Service/AuthService";
@@ -9,22 +9,63 @@ export default function Profile() {
   const { setIsLogged } = useAuth();
 
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState(() => {
-    const user = JSON.parse(localStorage.getItem("user")) || {};
-    return {
-      name: user.name || "",
-      email: user.email || "",
-      direccion: user.direccion || "",
-      localidad: user.localidad || "",
-      provincia: user.provincia || "",
-      telefono: user.telefono || "",
-      dni: user.dni || "",
-    };
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    address: "",
+    city: "",
+    province: "",
+    phone: "",
+    dni: "",
+    note: "",
   });
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    } else {
+      setForm({
+        name: user.name || "",
+        email: user.email || "",
+        address: "",
+        city: "",
+        province: "",
+        phone: "",
+        dni: "",
+        note: "",
+      });
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  // Trae los datos completos solo al editar
+  const fetchUserDetails = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const data = await AuthService.getUserById(user.id);
+      const details = data.detail || {};
+      setForm({
+        name: data.name || "",
+        email: data.email || "",
+        address: details.address || "",
+        city: details.city || "",
+        province: details.province || "",
+        phone: details.phone || "",
+        dni: details.dni || "",
+        note: details.note || "",
+      });
+    } catch {
+      setError("No se pudieron cargar los datos del usuario.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     await AuthService.logout();
@@ -32,16 +73,27 @@ export default function Profile() {
     navigate("/login");
   };
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     setEditing(true);
     setMsg("");
     setError("");
+    await fetchUserDetails();
   };
 
   const handleCancel = () => {
     setEditing(false);
     setMsg("");
     setError("");
+    setForm({
+      name: user.name || "",
+      email: user.email || "",
+      address: "",
+      city: "",
+      province: "",
+      phone: "",
+      dni: "",
+      note: "",
+    });
   };
 
   const handleChange = (e) => {
@@ -52,20 +104,46 @@ export default function Profile() {
     e.preventDefault();
     setMsg("");
     setError("");
+    setLoading(true);
     try {
-      // Debes implementar este método en AuthService
-      const updated = await AuthService.updateUserProfile(form);
-      // Actualiza localStorage y el form
-      localStorage.setItem("user", JSON.stringify({ ...user, ...updated }));
+      const payload = {
+        name: form.name,
+        email: form.email,
+        detail: {
+          address: form.address,
+          city: form.city,
+          province: form.province,
+          phone: form.phone,
+          dni: form.dni,
+          note: form.note,
+        }
+      };
+      const updated = await AuthService.updateUserProfile(payload);
       setEditing(false);
       setMsg("Datos actualizados correctamente.");
+      localStorage.setItem("user", JSON.stringify({
+        ...user,
+        name: updated.name || user.name,
+        email: updated.email || user.email,
+      }));
+      setForm({
+        name: updated.name || user.name,
+        email: updated.email || user.email,
+        address: "",
+        city: "",
+        province: "",
+        phone: "",
+        dni: "",
+        note: "",
+      });
     } catch {
       setError("No se pudo actualizar el perfil.");
+    } finally {
+      setLoading(false);
     }
   };
 
   if (!user) {
-    navigate("/login");
     return null;
   }
 
@@ -77,24 +155,10 @@ export default function Profile() {
           <div className="profile-data">
             <b>Usuario:</b>
             <div className="profile-value">
-              {user?.name || user?.email || "Sin datos"}
+              {form.name || form.email || "Sin datos"}
             </div>
             <b>Email:</b>
-            <div className="profile-value">{user?.email}</div>
-            {user.direccion && (
-              <>
-                <b>Dirección:</b>
-                <div className="profile-value">{user.direccion}</div>
-                <b>Localidad:</b>
-                <div className="profile-value">{user.localidad}</div>
-                <b>Provincia:</b>
-                <div className="profile-value">{user.provincia}</div>
-                <b>Teléfono:</b>
-                <div className="profile-value">{user.telefono}</div>
-                <b>DNI:</b>
-                <div className="profile-value">{user.dni}</div>
-              </>
-            )}
+            <div className="profile-value">{form.email}</div>
           </div>
           <button onClick={handleEdit} className="profile-btn edit">
             Editar datos personales
@@ -106,66 +170,75 @@ export default function Profile() {
           {error && <div className="profile-msg error">{error}</div>}
         </>
       ) : (
-        <form onSubmit={handleSave} className="profile-form">
-          <div>
-            <label>Nombre</label>
-            <input name="name" value={form.name} onChange={handleChange} />
-          </div>
-          <div>
-            <label>Email</label>
-            <input name="email" value={form.email} onChange={handleChange} />
-          </div>
-          <div>
-            <label>Dirección</label>
-            <input
-              name="direccion"
-              value={form.direccion}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <label>Localidad</label>
-            <input
-              name="localidad"
-              value={form.localidad}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <label>Provincia</label>
-            <input
-              name="provincia"
-              value={form.provincia}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <label>Teléfono</label>
-            <input
-              name="telefono"
-              value={form.telefono}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <label>DNI</label>
-            <input name="dni" value={form.dni} onChange={handleChange} />
-          </div>
-          <div className="profile-form-btns">
-            <button type="submit" className="profile-btn save">
-              Guardar
-            </button>
-            <button
-              type="button"
-              className="profile-btn cancel"
-              onClick={handleCancel}
-            >
-              Cancelar
-            </button>
-          </div>
-          {msg && <div className="profile-msg success">{msg}</div>}
-          {error && <div className="profile-msg error">{error}</div>}
-        </form>
+        loading ? (
+          <div className="profile-loading">Cargando datos...</div>
+        ) : (
+          <form onSubmit={handleSave} className="profile-form">
+            <div>
+              <label>Nombre</label>
+              <input name="name" value={form.name} onChange={handleChange} disabled />
+            </div>
+            <div>
+              <label>Email</label>
+              <input name="email" value={form.email} onChange={handleChange} disabled />
+            </div>
+            <div>
+              <label>Dirección</label>
+              <input
+                name="address"
+                value={form.address}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label>Localidad</label>
+              <input
+                name="city"
+                value={form.city}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label>Provincia</label>
+              <input
+                name="province"
+                value={form.province}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label>Teléfono</label>
+              <input
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label>DNI</label>
+              <input name="dni" value={form.dni} onChange={handleChange} />
+            </div>
+            <div>
+              <label>Nota</label>
+              <textarea name="note" value={form.note || ""} onChange={handleChange} />
+            </div>
+            <div className="profile-form-btns">
+              <button type="submit" className="profile-btn save" disabled={loading}>
+                Guardar
+              </button>
+              <button
+                type="button"
+                className="profile-btn cancel"
+                onClick={handleCancel}
+                disabled={loading}
+              >
+                Cancelar
+              </button>
+            </div>
+            {msg && <div className="profile-msg success">{msg}</div>}
+            {error && <div className="profile-msg error">{error}</div>}
+          </form>
+        )
       )}
     </div>
   );

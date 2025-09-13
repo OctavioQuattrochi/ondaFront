@@ -8,6 +8,9 @@ const getLocalProductImage = (imageName) => {
   return `/src/sources/store/${imageName}`;
 };
 
+const PROMO_CODE = "ONDA10";
+const PROMO_DISCOUNT = 0.10;
+
 const Cart = () => {
   const [items, setItems] = useState([]);
   const [promo, setPromo] = useState("");
@@ -15,6 +18,8 @@ const Cart = () => {
   const [total, setTotal] = useState(0);
   const [payment, setPayment] = useState("transfer");
   const [loading, setLoading] = useState(true);
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,7 +31,6 @@ const Cart = () => {
       .catch(() => setLoading(false));
   }, []);
 
-  // Obtiene el precio: primero de la variante, si no, del producto base
   const getPrecio = (item) => {
     if (item.variant?.price !== undefined && item.variant?.price !== null) {
       return parseFloat(item.variant.price);
@@ -37,13 +41,16 @@ const Cart = () => {
   };
 
   useEffect(() => {
-    const sub = items.reduce(
+    let sub = items.reduce(
       (acc, item) => acc + (getPrecio(item) * item.quantity),
       0
     );
+    if (promoApplied) {
+      sub = sub * (1 - PROMO_DISCOUNT);
+    }
     setSubtotal(sub);
     setTotal(sub);
-  }, [items]);
+  }, [items, promoApplied]);
 
   const handleQuantityChange = async (id, qty) => {
     if (qty < 1) return;
@@ -59,10 +66,17 @@ const Cart = () => {
   };
 
   const handleApplyPromo = () => {
-    alert("Código aplicado (mock)");
+    if (promo.trim().toUpperCase() === PROMO_CODE) {
+      setPromoApplied(true);
+      alert("¡Código aplicado! 10% de descuento.");
+    } else {
+      setPromoApplied(false);
+      alert("Código inválido.");
+    }
   };
 
   const handleCheckout = async () => {
+    setCheckoutLoading(true);
     try {
       const cartItems = items.map(item => ({
         variant_id: item.variant?.id,
@@ -83,6 +97,8 @@ const Cart = () => {
       });
     } catch {
       alert("No se pudo finalizar la compra");
+    } finally {
+      setCheckoutLoading(false);
     }
   };
 
@@ -145,8 +161,11 @@ const Cart = () => {
           value={promo}
           onChange={e => setPromo(e.target.value)}
           className="cart-promo-input"
+          disabled={promoApplied}
         />
-        <button className="cart-promo-btn" onClick={handleApplyPromo}>Aplicar</button>
+        <button className="cart-promo-btn" onClick={handleApplyPromo} disabled={promoApplied}>
+          {promoApplied ? "Aplicado" : "Aplicar"}
+        </button>
       </div>
 
       <div className="cart-summary-row">
@@ -163,14 +182,17 @@ const Cart = () => {
             Transferencia bancaria directa
           </label>
           <label>
-            <input type="radio" checked={payment === "cod"} onChange={() => setPayment("cod")} />
-            Contra reembolso
+            <input type="radio" checked={payment === "cod"} disabled />
+            Contra reembolso <span style={{ color: "#888", fontSize: "0.9em" }}>(Próximamente)</span>
           </label>
           <label>
-            <input type="radio" checked={payment === "mp"} onChange={() => setPayment("mp")} />
-            Débito o crédito a través de mercado pago
+            <input type="radio" checked={payment === "mp"} disabled />
+            Débito o crédito a través de mercado pago <span style={{ color: "#888", fontSize: "0.9em" }}>(Próximamente)</span>
           </label>
-          <button className="cart-checkout-btn" onClick={handleCheckout}>Finalizar compra</button>
+          <button className="cart-checkout-btn" onClick={handleCheckout} disabled={checkoutLoading}>
+            {checkoutLoading ? "Procesando compra..." : "Finalizar compra"}
+          </button>
+          {checkoutLoading && <div className="cart-loading">Procesando compra...</div>}
         </div>
       </div>
 

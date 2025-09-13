@@ -13,6 +13,7 @@ const Register = () => {
     confirmPassword: ''
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.id]: e.target.value });
@@ -21,9 +22,11 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     if (form.password !== form.confirmPassword) {
       setError('Las contraseñas no coinciden');
+      setLoading(false);
       return;
     }
 
@@ -38,8 +41,11 @@ const Register = () => {
       
       await AuthService.login(form.email, form.password);
       navigate('/addressform');
+      window.location.reload();
     } catch (err) {
       setError('Error al registrar. Intenta nuevamente.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,11 +55,11 @@ const Register = () => {
       <form className="register-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="name">Nombre</label>
-          <input type="text" id="name" className="form-input" required value={form.name} onChange={handleChange} />
+          <input type="text" id="name" className="form-input" required value={form.name} onChange={handleChange} disabled={loading} />
         </div>
         <div className="form-group">
           <label htmlFor="lastname">Apellido</label>
-          <input type="text" id="lastname" className="form-input" required value={form.lastname} onChange={handleChange} />
+          <input type="text" id="lastname" className="form-input" required value={form.lastname} onChange={handleChange} disabled={loading} />
         </div>
         <div className="form-group">
           <label htmlFor="email">Email</label>
@@ -65,6 +71,7 @@ const Register = () => {
             required
             value={form.email}
             onChange={handleChange}
+            disabled={loading}
           />
         </div>
         <div className="form-group">
@@ -78,6 +85,7 @@ const Register = () => {
               required
               value={form.password}
               onChange={handleChange}
+              disabled={loading}
             />
             <span className="eye-icon">👁️</span>
           </div>
@@ -94,16 +102,18 @@ const Register = () => {
               required
               value={form.confirmPassword}
               onChange={handleChange}
+              disabled={loading}
             />
             <span className="eye-icon">👁️</span>
           </div>
         </div>
 
         {error && <div style={{ color: 'red', marginBottom: 10 }}>{error}</div>}
+        {loading && <div className="register-loading">Creando cuenta...</div>}
 
         <div className="form-button-wrapper">
-          <button type="submit" className="register-button">
-            Crear cuenta
+          <button type="submit" className="register-button" disabled={loading}>
+            {loading ? "Creando..." : "Crear cuenta"}
           </button>
         </div>
       </form>

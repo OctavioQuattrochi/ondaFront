@@ -21,6 +21,7 @@ export default function Sidebar() {
 
   if (!isLogged) return null;
 
+  // Solo "usuario" ve compras y presupuestos
   if (role === "usuario") {
     return (
       <>
@@ -29,6 +30,7 @@ export default function Sidebar() {
             className="sidebar-toggle-btn"
             onClick={() => setOpen(true)}
             aria-label="Abrir menú"
+            style={{ color: "#a95ff7", background: "#222" }}
           >
             ☰
           </button>
@@ -38,6 +40,7 @@ export default function Sidebar() {
             className="sidebar-close-btn"
             onClick={() => setOpen(false)}
             aria-label="Cerrar menú"
+            style={{ color: "#a95ff7" }}
           >
             ×
           </button>
@@ -48,7 +51,7 @@ export default function Sidebar() {
                 className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
                 onClick={() => setOpen(false)}
               >
-                <PackageOpen size={18} style={{ marginRight: "8px" }} />
+                <PackageOpen size={18} style={{ marginRight: "8px", color: "#a95ff7" }} />
                 Mis compras
               </NavLink>
             </li>
@@ -58,7 +61,7 @@ export default function Sidebar() {
                 className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
                 onClick={() => setOpen(false)}
               >
-                <FileText size={18} style={{ marginRight: "8px" }} />
+                <FileText size={18} style={{ marginRight: "8px", color: "#a95ff7" }} />
                 Mis presupuestos
               </NavLink>
             </li>
@@ -74,6 +77,7 @@ export default function Sidebar() {
     );
   }
 
+  // Empleado y superadmin: NO ven "Mis compras" ni "Mis presupuestos"
   const showUsuarios = role === "superadmin";
 
   return (
@@ -83,6 +87,7 @@ export default function Sidebar() {
           className="sidebar-toggle-btn"
           onClick={() => setOpen(true)}
           aria-label="Abrir menú"
+          style={{ color: "#a95ff7", background: "#222" }}
         >
           ☰
         </button>
@@ -92,37 +97,18 @@ export default function Sidebar() {
           className="sidebar-close-btn"
           onClick={() => setOpen(false)}
           aria-label="Cerrar menú"
+          style={{ color: "#a95ff7" }}
         >
           ×
         </button>
         <ul className="sidebar-menu" style={{ marginTop: "50px" }}>
           <li>
             <NavLink
-              to="/mis-compras"
-              className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
-              onClick={() => setOpen(false)}
-            >
-              <PackageOpen size={18} style={{ marginRight: "8px" }} />
-              Mis compras
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/mis-presupuestos"
-              className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
-              onClick={() => setOpen(false)}
-            >
-              <FileText size={18} style={{ marginRight: "8px" }} />
-              Mis presupuestos
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
               to="/stok-materia"
               className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
               onClick={() => setOpen(false)}
             >
-              <PackageOpen size={18} style={{ marginRight: "8px" }} />
+              <PackageOpen size={18} style={{ marginRight: "8px", color: "#a95ff7" }} />
               Stock de materia prima
             </NavLink>
           </li>
@@ -132,7 +118,7 @@ export default function Sidebar() {
               className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
               onClick={() => setOpen(false)}
             >
-              <Package size={18} style={{ marginRight: "8px" }} />
+              <Package size={18} style={{ marginRight: "8px", color: "#a95ff7" }} />
               Stock de productos
             </NavLink>
           </li>
@@ -142,7 +128,7 @@ export default function Sidebar() {
               className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
               onClick={() => setOpen(false)}
             >
-              <Hammer size={18} style={{ marginRight: "8px" }} />
+              <Hammer size={18} style={{ marginRight: "8px", color: "#a95ff7" }} />
               Producción
             </NavLink>
           </li>
@@ -152,7 +138,7 @@ export default function Sidebar() {
               className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
               onClick={() => setOpen(false)}
             >
-              <FileText size={18} style={{ marginRight: "8px" }} />
+              <FileText size={18} style={{ marginRight: "8px", color: "#a95ff7" }} />
               Presupuestos
             </NavLink>
           </li>
@@ -163,7 +149,7 @@ export default function Sidebar() {
                 className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
                 onClick={() => setOpen(false)}
               >
-                <Users size={18} style={{ marginRight: "8px" }} />
+                <Users size={18} style={{ marginRight: "8px", color: "#a95ff7" }} />
                 Usuarios
               </NavLink>
             </li>
@@ -174,7 +160,7 @@ export default function Sidebar() {
               className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
               onClick={() => setOpen(false)}
             >
-              <DollarSign size={18} style={{ marginRight: "8px" }} />
+              <DollarSign size={18} style={{ marginRight: "8px", color: "#a95ff7" }} />
               Ventas
             </NavLink>
           </li>
@@ -184,7 +170,7 @@ export default function Sidebar() {
               className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
               onClick={() => setOpen(false)}
             >
-              <ClipboardList size={18} style={{ marginRight: "8px" }} />
+              <ClipboardList size={18} style={{ marginRight: "8px", color: "#a95ff7" }} />
               Órdenes
             </NavLink>
           </li>

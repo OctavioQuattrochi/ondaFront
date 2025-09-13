@@ -71,8 +71,6 @@ const Presupuestos = () => {
             <thead>
               <tr>
                 <th>Cliente</th>
-                <th>Costo</th>
-                <th>Ganancia</th>
                 <th>Precio propuesto</th>
                 <th>Estado</th>
                 <th>Detalle</th>
@@ -80,17 +78,15 @@ const Presupuestos = () => {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={6}>Cargando...</td></tr>
+                <tr><td colSpan={4}>Cargando...</td></tr>
               ) : error ? (
-                <tr><td colSpan={6} style={{ color: "red" }}>{error}</td></tr>
+                <tr><td colSpan={4} style={{ color: "red" }}>{error}</td></tr>
               ) : paginatedPresupuestos.length === 0 ? (
-                <tr><td colSpan={6}>No hay presupuestos para mostrar.</td></tr>
+                <tr><td colSpan={4}>No hay presupuestos para mostrar.</td></tr>
               ) : (
                 paginatedPresupuestos.map((fila) => (
                   <tr key={fila.id}>
                     <td>{fila.user?.name || fila.user_id}</td>
-                    <td>${fila.cost || "--"}</td>
-                    <td>${fila.profit || "--"}</td>
                     <td>${fila.estimated_price || "--"}</td>
                     <td>{ESTADOS[fila.status] || fila.status || "--"}</td>
                     <td>

@@ -44,11 +44,23 @@ const Customs = () => {
         quantity,
         note
       });
-      console.log("Respuesta del backend:", response);
-      // Solo mostramos el presupuesto final, con formato de moneda si es válido
       const price = response.estimated_price;
       if (price && !isNaN(Number(price))) {
-        setMensaje(`Presupuesto estimado: $${Number(price).toLocaleString('es-AR')}`);
+        setMensaje(
+          <>
+            <span style={{ color: "#7b5bff", fontWeight: "bold" }}>
+              Presupuesto realizado con éxito
+            </span>
+            <br />
+            <span>
+              Puede consultar el estado de su presupuesto desde <b>Mis Presupuestos</b>.
+            </span>
+            <br />
+            <span style={{ fontWeight: "bold" }}>
+              Presupuesto estimado: ${Number(price).toLocaleString('es-AR')}
+            </span>
+          </>
+        );
       } else {
         setMensaje("No se pudo calcular el presupuesto.");
       }
@@ -59,7 +71,6 @@ const Customs = () => {
     }
   };
 
-  // Limpiar imagen y preview si el formulario se resetea
   const handleFormReset = () => {
     setPreview(null);
     setMensaje("");
@@ -79,8 +90,8 @@ const Customs = () => {
         onReset={handleFormReset}
         autoComplete="off"
       >
-        <div className="left-container">
-          <label htmlFor="imageUpload" className="upload-label">
+        <div className="left-container" style={{ border: "2px solid #7b5bff", background: "#181818", justifyContent: preview ? "flex-start" : "center" }}>
+          <label htmlFor="imageUpload" className="upload-label" style={{ display: preview ? "none" : "flex" }}>
             <div className="upload-icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -103,8 +114,19 @@ const Customs = () => {
             accept="image/*"
           />
           {preview && (
-            <div className="image-preview">
-              <img src={preview} alt="Vista previa" style={{ maxWidth: "100%", maxHeight: 200, marginTop: 10 }} />
+            <div className="image-preview" style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <img
+                src={preview}
+                alt="Vista previa"
+                style={{
+                  maxWidth: "90%",
+                  maxHeight: "90%",
+                  borderRadius: "12px",
+                  boxShadow: "0 2px 12px #000a",
+                  objectFit: "contain",
+                  background: "#222"
+                }}
+              />
             </div>
           )}
         </div>
@@ -149,7 +171,10 @@ const Customs = () => {
             <select id="color" name="color" className="color-select" required>
               <option value="warm-white">Blanco cálido</option>
               <option value="cool-white">Blanco frío</option>
+              <option value="yellow">Amarillo</option>
               <option value="red">Rojo</option>
+              <option value="blue">Azul</option>
+              <option value="green">Verde</option>
             </select>
           </div>
 
