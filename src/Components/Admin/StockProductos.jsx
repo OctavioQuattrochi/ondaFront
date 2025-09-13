@@ -11,15 +11,18 @@ const StockProductos = () => {
   const [productoFilter, setProductoFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const pageSize = 10;
 
   useEffect(() => {
-    AuthService.getStock()
-      .then(data => setStock(Array.isArray(data) ? data : []))
-      .catch(() => setError("No se pudo cargar el stock de productos."));
-    AuthService.getProducts()
-      .then(data => setProducts(Array.isArray(data) ? data : []))
-      .catch(() => {}); // Si falla, solo no muestra el precio alternativo
+    Promise.all([
+      AuthService.getStock()
+        .then(data => setStock(Array.isArray(data) ? data : []))
+        .catch(() => setError("No se pudo cargar el stock de productos.")),
+      AuthService.getProducts()
+        .then(data => setProducts(Array.isArray(data) ? data : []))
+        .catch(() => {})
+    ]).finally(() => setLoading(false));
   }, []);
 
   const filteredStock = stock.filter(item => {
@@ -34,7 +37,6 @@ const StockProductos = () => {
 
   const paginatedStock = filteredStock.slice((page - 1) * pageSize, page * pageSize);
 
-  // Busca el precio en products si no está en la variante
   const getPrecio = (item) => {
     if (item.price !== undefined && item.price !== null) return `$${item.price}`;
     const prod = products.find(p => p.id === item.product_id);
@@ -83,24 +85,34 @@ const StockProductos = () => {
               </tr>
             </thead>
             <tbody>
-              {error && (
+              {loading ? (
                 <tr>
-                  <td colSpan={4} style={{ color: "red" }}>{error}</td>
+                  <td colSpan={4} style={{ textAlign: "center", color: "#a95ff7", fontWeight: "bold" }}>
+                    Cargando productos...
+                  </td>
                 </tr>
+              ) : (
+                <>
+                  {error && (
+                    <tr>
+                      <td colSpan={4} style={{ color: "red" }}>{error}</td>
+                    </tr>
+                  )}
+                  {paginatedStock.length === 0 && !error && (
+                    <tr>
+                      <td colSpan={4}>No hay productos en stock.</td>
+                    </tr>
+                  )}
+                  {paginatedStock.map((item) => (
+                    <tr key={item.id}>
+                      <td>{item.product_name}</td>
+                      <td>{item.color || "--"}</td>
+                      <td>{item.quantity}</td>
+                      <td>{getPrecio(item)}</td>
+                    </tr>
+                  ))}
+                </>
               )}
-              {paginatedStock.length === 0 && !error && (
-                <tr>
-                  <td colSpan={4}>No hay productos en stock.</td>
-                </tr>
-              )}
-              {paginatedStock.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.product_name}</td>
-                  <td>{item.color || "--"}</td>
-                  <td>{item.quantity}</td>
-                  <td>{getPrecio(item)}</td>
-                </tr>
-              ))}
             </tbody>
           </table>
         </div>

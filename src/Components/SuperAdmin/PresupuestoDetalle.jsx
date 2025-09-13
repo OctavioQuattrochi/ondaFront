@@ -24,6 +24,13 @@ const COLOR_LABELS = {
   "green": "Verde"
 };
 
+const EMPLEADO_ESTADOS = [
+  "en_produccion",
+  "listo_para_entregar",
+  "entregado",
+  "cancelado"
+];
+
 const PresupuestoDetalle = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -70,6 +77,20 @@ const PresupuestoDetalle = () => {
   if (error) return <div style={{ color: "red" }}>{error}</div>;
   if (!presupuesto) return <div>No se encontró el presupuesto.</div>;
 
+  // Opciones de estado para el select
+  let estadoOptions = ESTADOS;
+  if (userRole === "empleado" && ["pagado", ...EMPLEADO_ESTADOS].includes(presupuesto.status)) {
+    estadoOptions = ESTADOS.filter(e =>
+      EMPLEADO_ESTADOS.includes(e.value)
+    );
+    if (!EMPLEADO_ESTADOS.includes(presupuesto.status)) {
+      estadoOptions = [
+        ESTADOS.find(e => e.value === presupuesto.status),
+        ...ESTADOS.filter(e => EMPLEADO_ESTADOS.includes(e.value))
+      ].filter(Boolean);
+    }
+  }
+
   return (
     <div className="presupuesto-layout">
       <Sidebar />
@@ -93,6 +114,12 @@ const PresupuestoDetalle = () => {
               <strong>Color:</strong>{" "}
               <span style={{ color: "#a95ff7" }}>{COLOR_LABELS[presupuesto.color] || presupuesto.color}</span>
             </div>
+            {presupuesto.note && (
+              <div style={{ fontSize: "1.05rem", marginBottom: 8 }}>
+                <strong>Notas:</strong>{" "}
+                <span style={{ color: "#e1b7ff" }}>{presupuesto.note}</span>
+              </div>
+            )}
             {imagenUrl && (
               <button
                 className="btn-ver-imagen"
@@ -133,14 +160,40 @@ const PresupuestoDetalle = () => {
 
           <label className="input-label">
             <strong>Estado:</strong>
-            <select value={estado} onChange={e => setEstado(e.target.value)}>
-              {ESTADOS.map(e => (
+            <select
+              value={estado}
+              onChange={e => setEstado(e.target.value)}
+              disabled={
+                userRole === "empleado" &&
+                !["pagado", ...EMPLEADO_ESTADOS].includes(presupuesto.status)
+              }
+            >
+              {estadoOptions.map(e => (
                 <option key={e.value} value={e.value}>{e.label}</option>
               ))}
             </select>
+            {userRole === "empleado" && !["pagado", ...EMPLEADO_ESTADOS].includes(presupuesto.status) && (
+              <span style={{ marginLeft: 8, color: "#a95ff7", fontSize: "0.95rem" }}>
+                (Solo editable por empleado cuando el estado es "Pagado" o posterior)
+              </span>
+            )}
+            {userRole === "empleado" && ["pagado", ...EMPLEADO_ESTADOS].includes(presupuesto.status) && (
+              <span style={{ marginLeft: 8, color: "#a95ff7", fontSize: "0.95rem" }}>
+                (Solo puede cambiar a: En producción, Listo para entregar, Entregado o Cancelado)
+              </span>
+            )}
           </label>
 
-          <button className="guardar-btn" onClick={handleGuardar}>Guardar</button>
+          <button
+            className="guardar-btn"
+            onClick={handleGuardar}
+            disabled={
+              userRole === "empleado" &&
+              !["pagado", ...EMPLEADO_ESTADOS].includes(presupuesto.status)
+            }
+          >
+            Guardar
+          </button>
         </div>
         <div className="detalle-footer">
           <button onClick={() => navigate(-1)}>Atrás</button>

@@ -14,7 +14,7 @@ const StockMateriaPrima = () => {
   const pageSize = 10;
   const [editingId, setEditingId] = useState(null);
   const [addQty, setAddQty] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     cargarMateriales();
@@ -22,6 +22,7 @@ const StockMateriaPrima = () => {
   }, []);
 
   const cargarMateriales = () => {
+    setLoading(true);
     AuthService.getRawMaterials()
       .then(data => {
         const mats = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
@@ -29,7 +30,8 @@ const StockMateriaPrima = () => {
         const uniqueLocations = Array.from(new Set(mats.map(mat => mat.location || mat.supplier).filter(Boolean)));
         setLocations(uniqueLocations);
       })
-      .catch(() => setError("No se pudieron cargar las materias primas."));
+      .catch(() => setError("No se pudieron cargar las materias primas."))
+      .finally(() => setLoading(false));
   };
 
   const isAcrilico = (material) => {
@@ -50,11 +52,10 @@ const StockMateriaPrima = () => {
     if (addQty <= 0) return;
     setLoading(true);
     try {
-      // Si es acrílico, convierte m² a cm² antes de enviar
       const mat = materials.find(m => m.id === id);
       let qtyToSend = addQty;
       if (isAcrilico(mat.material)) {
-        qtyToSend = addQty * 10000; // m² a cm²
+        qtyToSend = addQty * 10000; // Convertir m² a cm²
       }
       await AuthService.addRawMaterialStock(id, qtyToSend);
       setEditingId(null);
@@ -62,7 +63,6 @@ const StockMateriaPrima = () => {
       cargarMateriales();
     } catch {
       setError("No se pudo agregar stock.");
-    } finally {
       setLoading(false);
     }
   };
@@ -116,65 +116,75 @@ const StockMateriaPrima = () => {
             </tr>
           </thead>
           <tbody>
-            {error && (
+            {loading ? (
               <tr>
-                <td colSpan={4} style={{ color: "red" }}>{error}</td>
-              </tr>
-            )}
-            {paginatedMaterials.length === 0 && !error && (
-              <tr>
-                <td colSpan={4}>No hay materias primas registradas.</td>
-              </tr>
-            )}
-            {paginatedMaterials.map((mat) => (
-              <tr key={mat.id}>
-                <td>{mat.material || "--"}</td>
-                <td>
-                  {isAcrilico(mat.material)
-                    ? `${(mat.quantity / 10000).toFixed(2)} m²`
-                    : mat.quantity}
-                </td>
-                <td>{mat.location || mat.supplier || "--"}</td>
-                <td>
-                  {editingId === mat.id ? (
-                    <>
-                      <input
-                        type="number"
-                        min={1}
-                        value={addQty}
-                        onChange={e => setAddQty(Number(e.target.value))}
-                        style={{ width: 70, marginRight: 8 }}
-                        placeholder={isAcrilico(mat.material) ? "m²" : ""}
-                      />
-                      <button
-                        className="btn aceptar"
-                        onClick={() => handleAddStock(mat.id)}
-                        disabled={loading}
-                      >
-                        {loading ? "Agregando..." : "Aceptar"}
-                      </button>
-                      <button
-                        className="btn cancelar"
-                        onClick={() => {
-                          setEditingId(null);
-                          setAddQty(0);
-                        }}
-                        disabled={loading}
-                      >
-                        Cancelar
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      className="btn editar"
-                      onClick={() => setEditingId(mat.id)}
-                    >
-                      Agregar stock
-                    </button>
-                  )}
+                <td colSpan={4} style={{ textAlign: "center", color: "#a95ff7", fontWeight: "bold" }}>
+                  Cargando materias primas...
                 </td>
               </tr>
-            ))}
+            ) : (
+              <>
+                {error && (
+                  <tr>
+                    <td colSpan={4} style={{ color: "red" }}>{error}</td>
+                  </tr>
+                )}
+                {paginatedMaterials.length === 0 && !error && (
+                  <tr>
+                    <td colSpan={4}>No hay materias primas registradas.</td>
+                  </tr>
+                )}
+                {paginatedMaterials.map((mat) => (
+                  <tr key={mat.id}>
+                    <td>{mat.material || "--"}</td>
+                    <td>
+                      {isAcrilico(mat.material)
+                        ? `${(mat.quantity / 10000).toFixed(2)} m²`
+                        : mat.quantity}
+                    </td>
+                    <td>{mat.location || mat.supplier || "--"}</td>
+                    <td>
+                      {editingId === mat.id ? (
+                        <>
+                          <input
+                            type="number"
+                            min={1}
+                            value={addQty}
+                            onChange={e => setAddQty(Number(e.target.value))}
+                            style={{ width: 70, marginRight: 8 }}
+                            placeholder={isAcrilico(mat.material) ? "m²" : ""}
+                          />
+                          <button
+                            className="btn aceptar"
+                            onClick={() => handleAddStock(mat.id)}
+                            disabled={loading}
+                          >
+                            {loading ? "Agregando..." : "Aceptar"}
+                          </button>
+                          <button
+                            className="btn cancelar"
+                            onClick={() => {
+                              setEditingId(null);
+                              setAddQty(0);
+                            }}
+                            disabled={loading}
+                          >
+                            Cancelar
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          className="btn editar"
+                          onClick={() => setEditingId(mat.id)}
+                        >
+                          Agregar stock
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </>
+            )}
           </tbody>
         </table>
         <Paginator

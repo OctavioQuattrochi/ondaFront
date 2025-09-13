@@ -128,7 +128,7 @@ const ProductDetail = () => {
         <div className="product-detail-info">
           <h2 className="product-detail-title">{producto.name}</h2>
           <p className="product-detail-description">{producto.description}</p>
-          <div className="product-detail-price">
+          <div className="product-detail-price" style={{ color: "#a95ff7", fontWeight: "bold" }}>
             Precio: ${getPrecio()}
           </div>
           <div style={{ margin: "1rem 0" }}>

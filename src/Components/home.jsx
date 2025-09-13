@@ -4,13 +4,12 @@ import { Link } from 'react-router-dom';
 import video from '../sources/home/Inicio.mp4';
 import gif from '../sources/home/Gif.mp4';
 
-
 const Home = () => {
   return (
     <div>
       <div className="contenedor">
 
-        <video autoPlay muted loop className="video-background">
+        <video autoPlay muted loop className="video-background" preload="none">
           <source src={video} type="video/mp4" />
           Tu navegador no soporta el video.
         </video>
@@ -42,7 +41,7 @@ const Home = () => {
       <div className="info-container">
 
         <div className="info-left">
-          <video autoPlay muted loop className="info-gif">
+          <video autoPlay muted loop className="info-gif" preload="none">
             <source src={gif} type="video/mp4" />
             Tu navegador no soporta el video.
           </video>

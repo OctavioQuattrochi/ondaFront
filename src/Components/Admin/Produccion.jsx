@@ -12,7 +12,15 @@ const ESTADOS_PERSONALIZADO = [
   { value: "pagado", label: "Pagado" },
   { value: "en_produccion", label: "En producción" },
   { value: "listo_para_entregar", label: "Listo para entregar" },
-  { value: "entregado", label: "Entregado" }
+  { value: "entregado", label: "Entregado" },
+  { value: "cancelado", label: "Cancelado" }
+];
+
+const EMPLEADO_ESTADOS = [
+  "en_produccion",
+  "listo_para_entregar",
+  "entregado",
+  "cancelado"
 ];
 
 const Produccion = () => {
@@ -29,21 +37,25 @@ const Produccion = () => {
   const [nuevoColor, setNuevoColor] = useState("");
   const [nuevaCantidad, setNuevaCantidad] = useState(1);
   const [nuevoEstado, setNuevoEstado] = useState(ESTADOS[0]);
-  const [nuevoPrecio, setNuevoPrecio] = useState(""); // <-- Nuevo estado para el precio
+  const [nuevoPrecio, setNuevoPrecio] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Paginador
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  // Cargar productos de la tienda para el select
+  const [userRole, setUserRole] = useState("");
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    setUserRole(user?.role || "");
+  }, []);
+
   useEffect(() => {
     AuthService.getPredefinedProducts()
       .then(data => setProductos(data))
       .catch(() => setError("No se pudieron cargar los productos de la tienda."));
   }, []);
 
-  // Cargar lotes de producción
   const cargarLotes = () => {
     setLoading(true);
     AuthService.getProductionBatches()
@@ -52,11 +64,9 @@ const Produccion = () => {
       .finally(() => setLoading(false));
   };
 
-  // Cargar personalizados (presupuestos pagados)
   const cargarPersonalizados = () => {
     AuthService.getAllQuotes()
       .then(data => {
-        // Solo presupuestos pagados o en producción
         const pagados = (Array.isArray(data) ? data : []).filter(
           p => ["pagado", "en_produccion"].includes(p.status)
         );
@@ -68,10 +78,8 @@ const Produccion = () => {
   useEffect(() => {
     cargarLotes();
     cargarPersonalizados();
-    // eslint-disable-next-line
   }, []);
 
-  // Filtrado por estado y producto
   const filteredLotes = lotes.filter(lote => {
     const matchEstado = estadoFilter ? lote.status === estadoFilter : true;
     const prod = productos.find(p => p.id === lote.product_id);
@@ -89,19 +97,15 @@ const Produccion = () => {
     return matchEstado && matchProducto;
   });
 
-  // Paginado
   const paginatedLotes = filteredLotes.slice((page - 1) * pageSize, page * pageSize);
   const paginatedPersonalizados = filteredPersonalizados.slice((page - 1) * pageSize, page * pageSize);
 
-  // Handler para agregar lote
   const handleAgregar = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     try {
-      // Buscar el producto original
       const productoOriginal = productos.find(p => p.id === nuevoProductoId);
-      // Si el input de precio está vacío, usar el precio del producto original
       const priceValue = nuevoPrecio !== "" && !isNaN(nuevoPrecio)
         ? parseFloat(nuevoPrecio)
         : productoOriginal?.final_price ?? 0;
@@ -111,11 +115,10 @@ const Produccion = () => {
         color: nuevoColor,
         quantity: nuevaCantidad,
         status: nuevoEstado,
-        price: priceValue // <-- Enviar el precio
+        price: priceValue
       };
       await AuthService.createProductionBatch(data);
       cargarLotes();
-      // Limpiar campos
       setNuevoProductoId("");
       setNuevoColor("");
       setNuevaCantidad(1);
@@ -204,9 +207,9 @@ const Produccion = () => {
           <table className="tabla-produccion">
             <thead>
               <tr>
-                <th>Tipo</th>
                 <th>Producto</th>
                 <th>Color/Detalle</th>
+                <th>Notas</th>
                 <th>Estado</th>
                 <th>Cantidad</th>
                 <th>Precio</th>
@@ -215,162 +218,232 @@ const Produccion = () => {
               </tr>
             </thead>
             <tbody>
-              {error && (
+              {loading ? (
                 <tr>
-                  <td colSpan={8} style={{ color: "red" }}>{error}</td>
+                  <td colSpan={8} style={{ textAlign: "center", color: "#a95ff7", fontWeight: "bold" }}>
+                    Cargando producción...
+                  </td>
                 </tr>
-              )}
-              {paginatedLotes.length === 0 && paginatedPersonalizados.length === 0 && !error && (
-                <tr>
-                  <td colSpan={8}>No hay registros.</td>
-                </tr>
-              )}
-              {/* Lotes de producción */}
-              {paginatedLotes.map((lote, idx) => {
-                const prod = productos.find(p => p.id === lote.product_id);
-                const isEditing = selectedLote?.id === lote.id && selectedLote?.tipo === "Producto";
-                return (
-                  <tr
-                    key={`lote-${lote.id || idx}`}
-                    className={isEditing ? "tr-edicion" : ""}
-                  >
-                    <td>Producto</td>
-                    <td>{prod?.name || "--"}</td>
-                    <td>{lote.color || "--"}</td>
-                    <td>
-                      {isEditing ? (
-                        <select
-                          value={selectedLote.status}
-                          onChange={e =>
-                            setSelectedLote({ ...selectedLote, status: e.target.value, tipo: "Producto" })
+              ) : (
+                <>
+                  {error && (
+                    <tr>
+                      <td colSpan={8} style={{ color: "red" }}>{error}</td>
+                    </tr>
+                  )}
+                  {paginatedLotes.length === 0 && paginatedPersonalizados.length === 0 && !error && (
+                    <tr>
+                      <td colSpan={8}>No hay registros.</td>
+                    </tr>
+                  )}
+                  {/* Lotes de producción */}
+                  {paginatedLotes.map((lote, idx) => {
+                    const prod = productos.find(p => p.id === lote.product_id);
+                    const isEditing = selectedLote?.id === lote.id && selectedLote?.tipo === "Producto";
+                    return (
+                      <tr
+                        key={`lote-${lote.id || idx}`}
+                        className={isEditing ? "tr-edicion" : ""}
+                      >
+                        {/* Producto */}
+                        <td>{prod?.name || "--"}</td>
+                        {/* Color */}
+                        <td>{lote.color || "--"}</td>
+                        {/* Notas */}
+                        <td>--</td>
+                        {/* Estado */}
+                        <td>
+                          {isEditing ? (
+                            <select
+                              value={selectedLote.status}
+                              onChange={e =>
+                                setSelectedLote({ ...selectedLote, status: e.target.value, tipo: "Producto" })
+                              }
+                            >
+                              {ESTADOS.map((estado, i) => (
+                                <option key={i} value={estado}>{estado}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            lote.status
+                          )}
+                        </td>
+                        {/* Cantidad */}
+                        <td>
+                          {isEditing ? (
+                            <input
+                              type="number"
+                              min={1}
+                              value={selectedLote.quantity}
+                              onChange={e =>
+                                setSelectedLote({ ...selectedLote, quantity: Number(e.target.value), tipo: "Producto" })
+                              }
+                            />
+                          ) : (
+                            lote.quantity
+                          )}
+                        </td>
+                        {/* Precio */}
+                        <td>
+                          {lote.price !== undefined
+                            ? `$${parseFloat(lote.price).toLocaleString()}`
+                            : prod?.final_price
+                              ? `$${parseFloat(prod.final_price).toLocaleString()}`
+                              : "--"
                           }
-                        >
-                          {ESTADOS.map((estado, i) => (
-                            <option key={i} value={estado}>{estado}</option>
-                          ))}
-                        </select>
-                      ) : (
-                        lote.status
-                      )}
-                    </td>
-                    <td>
-                      {isEditing ? (
-                        <input
-                          type="number"
-                          min={1}
-                          value={selectedLote.quantity}
-                          onChange={e =>
-                            setSelectedLote({ ...selectedLote, quantity: Number(e.target.value), tipo: "Producto" })
-                          }
-                        />
-                      ) : (
-                        lote.quantity
-                      )}
-                    </td>
-                    <td>
-                      {lote.price !== undefined
-                        ? `$${parseFloat(lote.price).toLocaleString()}`
-                        : prod?.final_price
-                          ? `$${parseFloat(prod.final_price).toLocaleString()}`
-                          : "--"
+                        </td>
+                        {/* Fecha estado */}
+                        <td>{lote.updated_at ? new Date(lote.updated_at).toLocaleDateString() : "--"}</td>
+                        {/* Acciones */}
+                        <td>
+                          {isEditing ? (
+                            <>
+                              <button
+                                className="btn aceptar"
+                                onClick={() => handleActualizar(selectedLote)}
+                                disabled={loading}
+                              >
+                                Guardar
+                              </button>
+                              <button
+                                className="btn cancelar"
+                                onClick={() => setSelectedLote(null)}
+                                disabled={loading}
+                              >
+                                Cancelar
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              className="btn editar"
+                              onClick={() => setSelectedLote({ ...lote, tipo: "Producto" })}
+                            >
+                              Editar
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {/* Personalizados (presupuestos pagados/en produccion) */}
+                  {paginatedPersonalizados.map((p, idx) => {
+                    const isEditing = selectedLote?.id === p.id && selectedLote?.tipo === "Personalizado";
+                    // Truncar nota si es muy larga
+                    const notaCorta = p.note
+                      ? p.note.length > 40
+                        ? p.note.slice(0, 40) + "..."
+                        : p.note
+                      : "--";
+                      
+                    let estadoOptions = ESTADOS_PERSONALIZADO;
+                    if (userRole === "empleado" && p.status === "pagado") {
+                      estadoOptions = ESTADOS_PERSONALIZADO.filter(e =>
+                        EMPLEADO_ESTADOS.includes(e.value) || e.value === p.status
+                      );
+                      if (!EMPLEADO_ESTADOS.includes(p.status)) {
+                        estadoOptions = [
+                          ESTADOS_PERSONALIZADO.find(e => e.value === p.status),
+                          ...ESTADOS_PERSONALIZADO.filter(e => EMPLEADO_ESTADOS.includes(e.value))
+                        ].filter(Boolean);
                       }
-                    </td>
-                    <td>{lote.updated_at ? new Date(lote.updated_at).toLocaleDateString() : "--"}</td>
-                    <td>
-                      {isEditing ? (
-                        <>
-                          <button
-                            className="btn aceptar"
-                            onClick={() => handleActualizar(selectedLote)}
-                            disabled={loading}
-                          >
-                            Guardar
-                          </button>
-                          <button
-                            className="btn cancelar"
-                            onClick={() => setSelectedLote(null)}
-                            disabled={loading}
-                          >
-                            Cancelar
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          className="btn editar"
-                          onClick={() => setSelectedLote({ ...lote, tipo: "Producto" })}
-                        >
-                          Editar
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-              {/* Personalizados (presupuestos pagados/en produccion) */}
-              {paginatedPersonalizados.map((p, idx) => {
-                const isEditing = selectedLote?.id === p.id && selectedLote?.tipo === "Personalizado";
-                return (
-                  <tr
-                    key={`perso-${p.id || idx}`}
-                    className={isEditing ? "tr-edicion" : ""}
-                  >
-                    <td>Personalizado</td>
-                    <td>{p.product_name || "--"}</td>
-                    <td>{p.detalle || "--"}</td>
-                    <td>
-                      {isEditing ? (
-                        <select
-                          value={selectedLote.status}
-                          onChange={e =>
-                            setSelectedLote({ ...selectedLote, status: e.target.value, tipo: "Personalizado" })
+                    }
+                    return (
+                      <tr
+                        key={`perso-${p.id || idx}`}
+                        className={isEditing ? "tr-edicion" : ""}
+                      >
+                        {/* Producto */}
+                        <td>Personalizado</td>
+                        {/* Color */}
+                        <td>{p.color || "--"}</td>
+                        {/* Notas */}
+                        <td title={p.note || ""}>{notaCorta}</td>
+                        {/* Estado */}
+                        <td>
+                          {isEditing ? (
+                            <select
+                              value={selectedLote.status}
+                              onChange={e =>
+                                setSelectedLote({ ...selectedLote, status: e.target.value, tipo: "Personalizado" })
+                              }
+                              disabled={
+                                userRole === "empleado" &&
+                                !["pagado", ...EMPLEADO_ESTADOS].includes(p.status)
+                              }
+                            >
+                              {userRole === "empleado" && ["pagado", ...EMPLEADO_ESTADOS].includes(p.status)
+                                ? ESTADOS_PERSONALIZADO.filter(e =>
+                                    EMPLEADO_ESTADOS.includes(e.value)
+                                  ).map(e => (
+                                    <option key={e.value} value={e.value}>{e.label}</option>
+                                  ))
+                                : ESTADOS_PERSONALIZADO.map(e => (
+                                    <option key={e.value} value={e.value}>{e.label}</option>
+                                  ))
+                              }
+                            </select>
+                          ) : (
+                            ESTADOS_PERSONALIZADO.find(e => e.value === p.status)?.label || p.status
+                          )}
+                          {isEditing && userRole === "empleado" && !["pagado", ...EMPLEADO_ESTADOS].includes(p.status) && (
+                            <span style={{ marginLeft: 8, color: "#a95ff7", fontSize: "0.95rem" }}>
+                              (Solo editable por empleado cuando el estado es "Pagado" o posterior)
+                            </span>
+                          )}
+                          {isEditing && userRole === "empleado" && ["pagado", ...EMPLEADO_ESTADOS].includes(p.status) && (
+                            <span style={{ marginLeft: 8, color: "#a95ff7", fontSize: "0.95rem" }}>
+                              (Solo puede cambiar a: En producción, Listo para entregar, Entregado o Cancelado)
+                            </span>
+                          )}
+                        </td>
+                        {/* Cantidad */}
+                        <td>{p.quantity || "--"}</td>
+                        {/* Precio */}
+                        <td>
+                          {p.price !== undefined
+                            ? `$${parseFloat(p.price).toLocaleString()}`
+                            : "--"
                           }
-                        >
-                          {ESTADOS_PERSONALIZADO.map((estado, i) => (
-                            <option key={i} value={estado.value}>{estado.label}</option>
-                          ))}
-                        </select>
-                      ) : (
-                        ESTADOS_PERSONALIZADO.find(e => e.value === p.status)?.label || p.status
-                      )}
-                    </td>
-                    <td>{p.quantity || "--"}</td>
-                    <td>
-                      {p.price !== undefined
-                        ? `$${parseFloat(p.price).toLocaleString()}`
-                        : "--"
-                      }
-                    </td>
-                    <td>{p.updated_at ? new Date(p.updated_at).toLocaleDateString() : "--"}</td>
-                    <td>
-                      {isEditing ? (
-                        <>
-                          <button
-                            className="btn aceptar"
-                            onClick={() => handleActualizarPersonalizado(selectedLote)}
-                            disabled={loading}
-                          >
-                            Guardar
-                          </button>
-                          <button
-                            className="btn cancelar"
-                            onClick={() => setSelectedLote(null)}
-                            disabled={loading}
-                          >
-                            Cancelar
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          className="btn editar"
-                          onClick={() => setSelectedLote({ ...p, tipo: "Personalizado" })}
-                        >
-                          Editar
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+                        </td>
+                        {/* Fecha estado */}
+                        <td>{p.updated_at ? new Date(p.updated_at).toLocaleDateString() : "--"}</td>
+                        {/* Acciones */}
+                        <td>
+                          {isEditing ? (
+                            <>
+                              <button
+                                className="btn aceptar"
+                                onClick={() => handleActualizarPersonalizado(selectedLote)}
+                                disabled={
+                                  loading ||
+                                  (userRole === "empleado" &&
+                                    !["pagado", ...EMPLEADO_ESTADOS].includes(selectedLote.status))
+                                }
+                              >
+                                Guardar
+                              </button>
+                              <button
+                                className="btn cancelar"
+                                onClick={() => setSelectedLote(null)}
+                                disabled={loading}
+                              >
+                                Cancelar
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              className="btn editar"
+                              onClick={() => setSelectedLote({ ...p, tipo: "Personalizado" })}
+                            >
+                              Editar
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </>
+              )}
             </tbody>
           </table>
         </div>
